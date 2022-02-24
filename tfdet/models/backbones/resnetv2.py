@@ -421,3 +421,213 @@ class ResNetV2(tf.keras.Model):
         if return_features:
             x, features = x
         return (x, features) if return_features else x
+
+
+@register_backbone
+def resnetv2_50x1_bitm():
+    cfg = ResNetV2Config(
+        name="resnetv2_50x1_bitm",
+        url="[timm]",
+        input_size=(448, 448),
+        nb_blocks=(3, 4, 6, 3),
+        width_factor=1,
+        pool_size=14,
+        crop_pct=1.0,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_50x3_bitm():
+    cfg = ResNetV2Config(
+        name="resnetv2_50x3_bitm",
+        url="[timm]",
+        input_size=(448, 448),
+        nb_blocks=(3, 4, 6, 3),
+        width_factor=3,
+        pool_size=14,
+        crop_pct=1.0,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_101x1_bitm():
+    cfg = ResNetV2Config(
+        name="resnetv2_101x1_bitm",
+        url="[timm]",
+        input_size=(448, 448),
+        nb_blocks=(3, 4, 23, 3),
+        width_factor=1,
+        pool_size=14,
+        crop_pct=1.0,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_101x3_bitm():
+    cfg = ResNetV2Config(
+        name="resnetv2_101x3_bitm",
+        url="[timm]",
+        input_size=(448, 448),
+        nb_blocks=(3, 4, 23, 3),
+        width_factor=3,
+        pool_size=14,
+        crop_pct=1.0,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_152x2_bitm():
+    cfg = ResNetV2Config(
+        name="resnetv2_152x2_bitm",
+        url="[timm]",
+        input_size=(448, 448),
+        nb_blocks=(3, 8, 36, 3),
+        width_factor=2,
+        pool_size=14,
+        crop_pct=1.0,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_152x4_bitm():
+    cfg = ResNetV2Config(
+        name="resnetv2_152x4_bitm",
+        url="[timm]",
+        input_size=(480, 480),
+        nb_blocks=(3, 8, 36, 3),
+        width_factor=4,
+        pool_size=15,
+        crop_pct=1.0,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_50x1_bitm_in21k():
+    cfg = ResNetV2Config(
+        name="resnetv2_50x1_bitm_in21k",
+        url="[timm]",
+        nb_classes=21843,
+        nb_blocks=(3, 4, 6, 3),
+        width_factor=1,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_50x3_bitm_in21k():
+    cfg = ResNetV2Config(
+        name="resnetv2_50x3_bitm_in21k",
+        url="[timm]",
+        nb_classes=21843,
+        nb_blocks=(3, 4, 6, 3),
+        width_factor=3,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_101x1_bitm_in21k():
+    cfg = ResNetV2Config(
+        name="resnetv2_101x1_bitm_in21k",
+        url="[timm]",
+        nb_classes=21843,
+        nb_blocks=(3, 4, 23, 3),
+        width_factor=1,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_101x3_bitm_in21k():
+    cfg = ResNetV2Config(
+        name="resnetv2_101x3_bitm_in21k",
+        url="[timm]",
+        nb_classes=21843,
+        nb_blocks=(3, 4, 23, 3),
+        width_factor=3,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_152x2_bitm_in21k():
+    cfg = ResNetV2Config(
+        name="resnetv2_152x2_bitm_in21k",
+        url="[timm]",
+        nb_classes=21843,
+        nb_blocks=(3, 8, 36, 3),
+        width_factor=2,
+    )
+    return ResNetV2, cfg
+
+
+@register_model
+def resnetv2_152x4_bitm_in21k():
+    cfg = ResNetV2Config(
+        name="resnetv2_152x4_bitm_in21k",
+        url="[timm]",
+        nb_classes=21843,
+        nb_blocks=(3, 8, 36, 3),
+        width_factor=4,
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_50x1_bit_distilled():
+    """
+    ResNetV2-50x1-BiT Distilled
+    Paper: Knowledge distillation: A good teacher is patient and consistent
+    Link: https://arxiv.org/abs/2106.05237
+    """
+    cfg = ResNetV2Config(
+        name="resnetv2_50x1_bit_distilled",
+        url="[timm]",
+        nb_blocks=(3, 4, 6, 3),
+        width_factor=1,
+        interpolation="bicubic",
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_152x2_bit_teacher():
+    """
+    ResNetV2-152x2-BiT Teacher
+    Paper: Knowledge distillation: A good teacher is patient and consistent
+    Link: https://arxiv.org/abs/2106.05237
+    """
+    cfg = ResNetV2Config(
+        name="resnetv2_152x2_bit_teacher",
+        url="[timm]",
+        nb_blocks=(3, 8, 36, 3),
+        width_factor=2,
+        interpolation="bicubic",
+    )
+    return ResNetV2, cfg
+
+
+@register_backbone
+def resnetv2_152x2_bit_teacher_384():
+    """
+    ResNetV2-152x2-BiT Teacher @ 384x384
+    Paper: Knowledge distillation: A good teacher is patient and consistent
+    Link: https://arxiv.org/abs/2106.05237
+    """
+    cfg = ResNetV2Config(
+        name="resnetv2_152x2_bit_teacher_384",
+        url="[timm]",
+        input_size=(384, 384),
+        nb_blocks=(3, 8, 36, 3),
+        width_factor=2,
+        pool_size=12,
+        crop_pct=1.0,
+        interpolation="bicubic",
+    )
+    return ResNetV2, cfg

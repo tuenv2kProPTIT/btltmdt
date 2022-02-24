@@ -62,7 +62,7 @@ def _natural_key(string_):
     return [int(s) if s.isdigit() else s for s in re.split(r"(\d+)", string_.lower())]
 
 
-def list_models(
+def list_backbones(
     name_filter: Union[str, List[str]] = "",
     module: str = "",
     pretrained: Union[bool, str] = False,
@@ -134,7 +134,7 @@ def list_modules():
     return list(sorted(modules))
 
 
-def is_model_in_modules(model_name, module_names):
+def is_backbones_in_modules(model_name, module_names):
     """Check if a model exists within a subset of modules
     Args:
         model_name (str) - name of model to check
