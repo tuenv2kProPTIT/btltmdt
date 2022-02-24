@@ -1,12 +1,15 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 # Modified Tue Nguyen 24/02/2022
-from ctypes import Union
+
 from dataclasses import dataclass
-from typing import List, Tuple
+from typing import List, Tuple,Union
 from xmlrpc.client import Boolean
 from tfdet.core.config import CoreConfig
 import tensorflow as tf2 
 import numpy as np
+from tfdet.utils.serializable import keras_serializable
+
+from tfdet.utils.shape_utils import shape_list
 @dataclass
 class AnchorConfig(CoreConfig):
     """Standard anchor generator for 2D anchor-based detectors.
@@ -56,7 +59,7 @@ class AnchorConfig(CoreConfig):
     name : str = "AnchorGeneratorConfig"
     last_modified: str = "4:40-24/02/2022"
     #scales (list[int] | None)
-    strides: Union[List[int], List[Tuple[int, int]]] = None 
+    strides: Union[ List[int], List[ Tuple[int, int] ] ] = None 
     ratios : List[float] = None 
     scales : Union[List[int],None] = None 
     base_sizes: Union[List[int], None] =None 
@@ -66,8 +69,9 @@ class AnchorConfig(CoreConfig):
     centers : Union[List[Tuple[float,float]], None] = None 
     center_offset: float = None 
 
-
+@keras_serializable
 class AnchorGenerator(tf2.keras.layers.Layer):
+    cfg_class=AnchorConfig
     def __init__(self, cfg : AnchorConfig, **kwargs) -> None:
         super().__init__(**kwargs)
         self.cfg = cfg 
@@ -90,12 +94,13 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         assert len(self.base_sizes) == len(self.strides), \
             'The number of strides should be the same as base sizes, got ' \
             f'{self.strides} and {self.base_sizes}'
-
+        scales=self.cfg.scales
         # calculate scales of anchors
         assert (( self.cfg.octave_base_scale is not None
                  and  self.cfg.scales_per_octave is not None) ^ (scales is not None)), \
             'scales and octave_base_scale with scales_per_octave cannot' \
             ' be set at the same time'
+        
         if scales is not None:
             self.scales =tf2.convert_to_tensor(scales, tf2.float32)
         elif  self.cfg.octave_base_scale is not None and  self.cfg.scales_per_octave is not None:
@@ -369,12 +374,14 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         valid =tf2.broadcast_to(valid, [valid.shape[0],num_base_anchors])
         valid = tf2.reshape(valid,[-1,])
         return valid
-    def get_config(self):
-        config = super().get_config()
-        config.update(
-            self.cfg.as_dict()
-        )
-        return config
+
+    def call(self, inputs):
+        ''' inputs : bs,h,w,channel 
+        '''
+        shape_ = shape_list(inputs)
+        all_anchor = self.grid_priors(shape_[1:-1])
+        return all_anchor
+
     def __repr__(self):
         """str: a string that describes the module"""
         indent_str = '    '
@@ -400,4 +407,4 @@ def _pair(value):
     if isinstance(value, tuple):
         assert len(value) == 2
         return value
-    return tuple(value,value)
+    return (value,value)
