@@ -399,29 +399,26 @@ class ResNetV2(tf.keras.Model):
             + ["features", "logits"]
         )
 
-    def forward_features(self, x, training=False, return_features=False):
-        features = {}
+    def call(self, x, training=False, return_features=False):
+        features = []
         x = self.stem(x)
-        features["stem"] = x
-
+        if return_features:
+          features.append(x)
         for j, block in enumerate(self.blocks):
             x = block(x, training=training)
-            features[f"block_{j}"] = x
-
-        if self.cfg.preact:
-            x = self.norm(x, training=training)
-            x = self.act(x)
-        features["features"] = x
-
-        return (x, features) if return_features else x
-
-    def call(self, x, training=False, return_features=False):
-        features = {}
-        x = self.forward_features(x, training, return_features)
+            if self.cfg.preact and j == len(self.blocks) - 1:
+              x = self.norm(x, training=training)
+              x = self.act(x)
+            if return_features:
+              features.append(x)
         if return_features:
-            x, features = x
-        return (x, features) if return_features else x
-
+          feature=[]
+          total = 0
+          for j in self.cfg.nb_blocks:
+            feature.append(j + total)
+            total = total + j 
+          features = [features[k] for k in feature]
+        return  features if return_features else x
 
 @register_backbone
 def resnetv2_50x1_bitm():
