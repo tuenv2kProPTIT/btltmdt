@@ -1,1 +1,1 @@
-from anchor.anchor_generator import AnchorConfig, AnchorGenerator
+from tfdet.core.anchor.anchor_generator import AnchorConfig, AnchorGenerator

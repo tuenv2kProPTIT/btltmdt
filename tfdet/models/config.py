@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+@dataclass
 class BackBoneConfig:
     """Share core config 
     """

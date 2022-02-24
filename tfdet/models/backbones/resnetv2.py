@@ -512,7 +512,7 @@ def resnetv2_50x1_bitm_in21k():
     cfg = ResNetV2Config(
         name="resnetv2_50x1_bitm_in21k",
         url="[timm]",
-        nb_classes=21843,
+       
         nb_blocks=(3, 4, 6, 3),
         width_factor=1,
     )
@@ -524,7 +524,7 @@ def resnetv2_50x3_bitm_in21k():
     cfg = ResNetV2Config(
         name="resnetv2_50x3_bitm_in21k",
         url="[timm]",
-        nb_classes=21843,
+       
         nb_blocks=(3, 4, 6, 3),
         width_factor=3,
     )
@@ -536,7 +536,7 @@ def resnetv2_101x1_bitm_in21k():
     cfg = ResNetV2Config(
         name="resnetv2_101x1_bitm_in21k",
         url="[timm]",
-        nb_classes=21843,
+       
         nb_blocks=(3, 4, 23, 3),
         width_factor=1,
     )
@@ -548,7 +548,7 @@ def resnetv2_101x3_bitm_in21k():
     cfg = ResNetV2Config(
         name="resnetv2_101x3_bitm_in21k",
         url="[timm]",
-        nb_classes=21843,
+       
         nb_blocks=(3, 4, 23, 3),
         width_factor=3,
     )
@@ -560,19 +560,18 @@ def resnetv2_152x2_bitm_in21k():
     cfg = ResNetV2Config(
         name="resnetv2_152x2_bitm_in21k",
         url="[timm]",
-        nb_classes=21843,
+       
         nb_blocks=(3, 8, 36, 3),
         width_factor=2,
     )
     return ResNetV2, cfg
 
 
-@register_model
+@register_backbone
 def resnetv2_152x4_bitm_in21k():
     cfg = ResNetV2Config(
         name="resnetv2_152x4_bitm_in21k",
         url="[timm]",
-        nb_classes=21843,
         nb_blocks=(3, 8, 36, 3),
         width_factor=4,
     )
