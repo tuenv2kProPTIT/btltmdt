@@ -21,7 +21,7 @@ __all__ = [
     "list_modules",
     "backbones_class",
     "backbones_config",
-    "register_backbones",
+    "register_backbone",
 ]
 
 _backbones_class = {}
