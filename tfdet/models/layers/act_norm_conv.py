@@ -55,6 +55,10 @@ class Conv2DNorm(tf.keras.layers.Conv2D):
         eps=1e-8,
         **kwargs
     ):
+        if isinstance(norm_cfg, str):
+            norm_cfg = {'name':norm_cfg}
+        if isinstance(act_cfg,str):
+            act_cfg={'name':act_cfg}
         if norm_cfg is not None and norm_cfg.get("name","") != "":
             use_bias=False
         super().__init__(
