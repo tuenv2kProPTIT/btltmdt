@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass,field
 import imp
 import numpy as np
 from tfdet.models.config import HeadConfig
@@ -15,25 +15,25 @@ from tfdet.utils.trick_tensor import gather_based_on_match
 from tfdet.models.losses.build_loss import build_loss
 @dataclass
 class AnchorHeadConfig(HeadConfig):
-    anchor_config: Dict = None 
-    assigner: Dict  = None 
-    sampler : Dict = None
-    bbox_encode: Dict = None
+    anchor_config: Dict =  field(default_factory=dict) 
+    assigner: Dict  =  field(default_factory=dict) 
+    sampler : Dict =  field(default_factory=dict)
+    bbox_encode: Dict =  field(default_factory=dict)
     num_heads: int = 4
     filters: int = 256
-    act_cfg: Union[Dict, str]  = 'relu'
-    norm_cfg: Union[Dict, str] = ''
+    act_cfg: Union[Dict, str]  = field(default_factory=lambda:'relu')
+    norm_cfg: Union[Dict, str] = field(default_factory=lambda:'')
     num_classes: int = 80
 
-    loss_cls : Dict = {"name":'CrossEntropyLoss','use_sigmoid':True, 'loss_weight':1.0}
-    loss_bbox: Dict = {'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0}
+    loss_cls : Dict = field(default_factory=lambda: {"name":'CrossEntropyLoss','use_sigmoid':True, 'loss_weight':1.0})
+    loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0})
 
-    test_cfg : Dict = {''}
-    train_cfg :  Dict = {
+    test_cfg : Dict = field(default_factory=lambda:{''})
+    train_cfg :  Dict =field(default_factory=lambda: {
        
         'batch_size':16,
 
-    }   
+    })
 
 @keras_serializable
 class AnchorHead(tf.keras.Model):

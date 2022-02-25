@@ -1,7 +1,7 @@
 import imp
 from tfdet.core.config import CoreConfig
 from dataclasses import  dataclass
-from typing import List
+from typing import List, Tuple
 import tensorflow as tf
 from tfdet.utils.constants import EPSILON
 @dataclass
@@ -9,7 +9,7 @@ class DeltaXYWHConfig(CoreConfig):
     last_modified = '25/02/2022'
     name = 'bbox_encoder'
     
-    scale_factors:List[int] = [10., 10., 5., 5.]
+    scale_factors:Tuple[int] = [10., 10., 5., 5.]
 
 def get_center_coordinates_and_sizes(box_corners, scope='None'):
     """Computes the center coordinates, height and width of the boxes.
