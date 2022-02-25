@@ -9,7 +9,7 @@ class MaxIOUAssignerConfig(CoreConfig):
     neg_iou_thr: float = 0.4
     min_pos_iou: float = 0.
     iou_calculator: str = "IouSimilarity"
-
+    force_match_for_each_row=True
 
 class MaxIOUAssigner:
     def __init__(self, cfg:MaxIOUAssignerConfig, *args, **kwargs):
@@ -74,7 +74,7 @@ class MaxIOUAssigner:
                                                 -2)
               
 
-            if self._force_match_for_each_row:
+            if self.cfg.force_match_for_each_row:
                 similarity_matrix_shape = shape_utils.shape_list(
                     similarity_matrix)
                 force_match_column_ids = tf.argmax(similarity_matrix, 1,
