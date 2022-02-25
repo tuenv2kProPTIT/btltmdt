@@ -6,3 +6,4 @@ class CoreConfig:
 
     name: str = ""
     last_modified: str = ""
+
