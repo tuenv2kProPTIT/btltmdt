@@ -10,7 +10,7 @@ class FPNConfig(NeckConfig):
     filters: int = 256
     start_level:int = 0
     end_level: int = -1 
-    num_nb_ins: int = None
+    num_nb_ins: int = 4
     num_nb_outs: int = None 
     
     add_extra_convs=False

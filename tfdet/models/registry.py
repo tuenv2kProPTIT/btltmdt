@@ -15,37 +15,23 @@ from copy import deepcopy
 from typing import List, Union
 
 __all__ = [
-    "list_backbones",
-    "is_backbones",
-    "is_backbones_in_modules",
+    "list_models",
+    "is_models",
+    "is_models_in_modules",
     "list_modules",
-    "backbones_class",
-    "backbones_config",
-    "register_backbone",
-    "get_backbone"
-    
+    "model_class",
+    "model_config",
+    "register_model",
 ]
 
-_backbones_class = {}
-_backbones_config = {}
+_model_class = {}
+_model_config = {}
 # Dict of sets to check membership of model in module
 _module_to_models = defaultdict(set)
 _model_has_pretrained = set()  # Model names that have pretrained weight url present
 
-_backbone_class_sum={}
-def register(cls):
-    cfg = cls.cfg_class
-    name=cfg.name.lower()
-    _backbone_class_sum[name] = {
-        'config':cfg,
-        'instance':cls
-    }
-def get_backbone(cfg):
-    name=cfg.pop("name","").lower()
-    if name in _backbone_class_sum:
-        return _backbone_class_sum[name]
-    raise Exception(f"class with name = {name} didn't register at anywhere")
-def register_backbone(fn):
+
+def register_model(fn):
     # Get model class and model config
     cls, cfg = fn()
     model_name = cfg.name
@@ -64,8 +50,8 @@ def register_backbone(fn):
         mod.__all__ = [model_name]
 
     # Add entries to registry dict/sets
-    _backbones_class[model_name] = cls
-    _backbones_config[model_name] = deepcopy(cfg)
+    _model_class[model_name] = cls
+    _model_config[model_name] = deepcopy(cfg)
     _module_to_models[module_name].add(model_name)
     if cfg.url:  # If URL is non-null, we assume it points to pretrained weights
         _model_has_pretrained.add(model_name)
@@ -76,7 +62,7 @@ def _natural_key(string_):
     return [int(s) if s.isdigit() else s for s in re.split(r"(\d+)", string_.lower())]
 
 
-def list_backbones(
+def list_models(
     name_filter: Union[str, List[str]] = "",
     module: str = "",
     pretrained: Union[bool, str] = False,
@@ -98,7 +84,7 @@ def list_backbones(
     if module:
         all_models = list(_module_to_models[module])
     else:
-        all_models = _backbones_class.keys()
+        all_models = _model_class.keys()
 
     if name_filter:
         if not isinstance(name_filter, (tuple, list)):
@@ -127,19 +113,19 @@ def list_backbones(
     return list(sorted(models, key=_natural_key))
 
 
-def is_backbones(model_name):
+def is_models(model_name):
     """Check if a model name exists"""
-    return model_name in _backbones_class
+    return model_name in _model_class
 
 
-def backbones_class(model_name):
+def model_class(model_name):
     """Fetch a model entrypoint for specified model name"""
-    return _backbones_class[model_name]
+    return _model_class[model_name]
 
 
-def backbones_config(model_name):
+def model_config(model_name):
     """Fetch a model config for specified model name"""
-    return _backbones_config[model_name]
+    return _model_config[model_name]
 
 
 def list_modules():
@@ -148,7 +134,7 @@ def list_modules():
     return list(sorted(modules))
 
 
-def is_backbones_in_modules(model_name, module_names):
+def is_models_in_modules(model_name, module_names):
     """Check if a model exists within a subset of modules
     Args:
         model_name (str) - name of model to check

@@ -1,6 +1,6 @@
 import tensorflow as tf 
 from dataclasses import dataclass
-
+from tfdet.models.losses.build_loss import register
 
 
 @dataclass
@@ -10,7 +10,7 @@ class SmoothL1LossConfig:
     name='SmoothL1Loss'
     last_modified='25/02/2022'
 
-
+@register
 class SmoothL1Loss:
     cfg_class = SmoothL1LossConfig
     def __init__(self, cfg: SmoothL1LossConfig, *args, **kwargs) -> None:

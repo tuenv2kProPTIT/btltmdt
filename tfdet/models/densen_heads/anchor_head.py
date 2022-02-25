@@ -15,6 +15,8 @@ from tfdet.utils.trick_tensor import gather_based_on_match
 from tfdet.models.losses.build_loss import build_loss
 @dataclass
 class AnchorHeadConfig(HeadConfig):
+    name='AnchorHead'
+    
     anchor_config: Dict =  field(default_factory=dict) 
     assigner: Dict  =  field(default_factory=dict) 
     sampler : Dict =  field(default_factory=dict)
@@ -34,6 +36,7 @@ class AnchorHeadConfig(HeadConfig):
         'batch_size':16,
 
     })
+    last_modified:str='25/02/2022'
 
 @keras_serializable
 class AnchorHead(tf.keras.Model):

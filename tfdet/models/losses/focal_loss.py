@@ -1,7 +1,7 @@
 import tensorflow as tf 
 from dataclasses import dataclass
 from tfdet.utils.shape_utils import shape_list
-
+from tfdet.models.losses.build_loss import register
 
 @dataclass
 class FocalLossConfig:
@@ -21,6 +21,7 @@ def focal_loss_funtion(pred, target, alpha = 0.25, gamma = 2., label_smoothing =
     ce = tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=pred)
     loss_without_weights= alpha_factor * modulating_factor * ce
     return tf.math.reduce_sum(loss_without_weights,axis=-1)
+@register
 class FocalLoss:
     cfg_class = FocalLossConfig
     def __init__(self, cfg: FocalLossConfig, *args, **kwargs) -> None:

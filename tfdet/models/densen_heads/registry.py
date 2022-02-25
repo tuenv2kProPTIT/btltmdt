@@ -22,6 +22,7 @@ __all__ = [
     "densen_head_class",
     "densen_head_config",
     "register_densen_head",
+    "get_densen_head"
 ]
 
 _densen_head_class = {}
@@ -29,6 +30,19 @@ _densen_head_config = {}
 # Dict of sets to check membership of model in module
 _module_to_models = defaultdict(set)
 _model_has_pretrained = set()  # Model names that have pretrained weight url present
+_densen_head={}
+def register(cls):
+    cfg = cls.cfg_class
+    name=cfg.name.lower()
+    _densen_head[name] = {
+        'config':cfg,
+        'instance':cls
+    }
+def get_densen_head(cfg):
+    name=cfg.pop("name","").lower()
+    if name in _densen_head:
+        return _densen_head[name]
+    raise Exception(f"class with name = {name} didn't register at anywhere")
 
 
 def register_densen_head(fn):

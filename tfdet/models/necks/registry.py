@@ -22,6 +22,7 @@ __all__ = [
     "neck_class",
     "neck_config",
     "register_neck",
+    "get_neck"
 ]
 
 _neck_class = {}
@@ -29,7 +30,20 @@ _neck_config = {}
 # Dict of sets to check membership of model in module
 _module_to_models = defaultdict(set)
 _model_has_pretrained = set()  # Model names that have pretrained weight url present
+_neck_register={}
 
+def register(cls):
+    cfg = cls.cfg_class
+    name=cfg.name.lower()
+    _neck_register[name] = {
+        'config':cfg,
+        'instance':cls
+    }
+def get_neck(cfg):
+    name=cfg.pop("name","").lower()
+    if name in _neck_register:
+        return _neck_register[name]
+    raise Exception(f"class neck with name = {name} didn't register at anywhere")
 
 def register_neck(fn):
     # Get model class and model config

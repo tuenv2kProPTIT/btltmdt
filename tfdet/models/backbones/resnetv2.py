@@ -27,15 +27,18 @@ import numpy as np
 import tensorflow as tf 
 
 from tfdet.models.config import BackBoneConfig
-from tfdet.models.backbones.registry import register_backbone
+from tfdet.models.backbones.registry import register_backbone, register
 from tfdet.utils.constants import IMAGENET_DEFAULT_MEAN,IMAGENET_DEFAULT_STD,IMAGENET_INCEPTION_MEAN,IMAGENET_INCEPTION_STD
 from tfdet.models.layers.factory import act_layer_factory, norm_layer_factory
 
 from tfdet.models.layers.std_conv import StdConv2D
 from tfdet.models.layers.drop import DropPath # stocha depth
 from tfdet.utils.serializable import keras_serializable
+
 @dataclass
 class ResNetV2Config(BackBoneConfig):
+    name='resnetv2'
+    last_modified='25/02/2022'
     in_channels: int = 3
     input_size: Tuple[int, int] = (224, 224)
     # Residual blocks
@@ -330,7 +333,7 @@ class ResNetV2Stem(tf.keras.layers.Layer):
         x = self.pool(x)
         return x
 
-
+@register
 @keras_serializable
 class ResNetV2(tf.keras.Model):
     """
