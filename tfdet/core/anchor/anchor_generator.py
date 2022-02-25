@@ -67,7 +67,7 @@ class AnchorConfig(CoreConfig):
     octave_base_scale: int = None 
     scales_per_octave: int = None 
     centers : Union[List[Tuple[float,float]], None] = None 
-    center_offset: float = None 
+    center_offset: float = 0. 
 
 @keras_serializable
 class AnchorGenerator(tf2.keras.layers.Layer):
@@ -130,7 +130,7 @@ class AnchorGenerator(tf2.keras.layers.Layer):
     def num_base_priors(self):
         """list[int]: The number of priors (anchors) at a point
         on the feature grid"""
-        return [base_anchors.size(0) for base_anchors in self.base_anchors]
+        return [base_anchors.shape[0] for base_anchors in self.base_anchors]
     @property
     def num_levels(self):
         """int: number of feature levels that the generator will be applied"""
