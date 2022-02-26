@@ -98,9 +98,9 @@ def crop_bbox_by_coords(
     return normalize_bbox(cropped_bbox, crop_height, crop_width)
 
 def get_random_crop_coords(height: int, width: int, crop_height: int, crop_width: int, h_start: float, w_start: float):
-    y1 = int((height - crop_height) * h_start)
+    y1 = tf.round( tf.cast(height - crop_height,tf.float32) * h_start)
     y2 = y1 + crop_height
-    x1 = int((width - crop_width) * w_start)
+    x1 = tf.round( tf.cast(width - crop_width,tf.float32) * w_start) 
     x2 = x1 + crop_width
     return x1, y1, x2, y2
 
@@ -116,13 +116,15 @@ def bbox_random_crop(
 
 def random_crop(img:tf.Tensor, crop_height: int, crop_width: int, h_start: float, w_start: float):
     height, width =shape_list(img)[-3:-1]
-    if height < crop_height or width < crop_width:
-        raise ValueError(
-            "Requested crop size ({crop_height}, {crop_width}) is "
+    check=tf.logical_or(tf.less(height, crop_height), tf.less(width,crop_width))
+    def error():
+        tf.print("Requested crop size ({crop_height}, {crop_width}) is "
             "larger than the image size ({height}, {width})".format(
                 crop_height=crop_height, crop_width=crop_width, height=height, width=width
-            )
-        )
+            ))
+    def not_error():
+        pass
+    tf.cond(check, error, not_error)
     x1, y1, x2, y2 = get_random_crop_coords(height, width, crop_height, crop_width, h_start, w_start)
     img = img[...,y1:y2, x1:x2]
     return img
