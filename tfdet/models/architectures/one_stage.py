@@ -33,6 +33,7 @@ class ConfigOneStage:
     ))
 
     head : Dict = field(default_factory= lambda : dict(
+        name="AnchorHead",
         anchor_config=dict(
             octave_base_scale=4,
             scales_per_octave=3,
