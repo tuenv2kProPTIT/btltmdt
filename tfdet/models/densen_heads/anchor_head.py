@@ -127,7 +127,7 @@ class AnchorHead(tf.keras.Model):
         bbox_pred = tf.reshape(bbox_pred, [1* shape_list_feature[1] * shape_list_feature[0] * self.num_anchors, 4 ])
         # bs,M,4
 
-        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_targets=mask_labels)
+        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_tagets=mask_labels)
         index_matching = self.sampler.sampler(index_matching)
         # -2 for ignore,-1 negative, index for positive
 
