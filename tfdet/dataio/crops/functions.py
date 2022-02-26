@@ -36,10 +36,6 @@ def denormalize_bbox(bbox, rows, cols):
     Raises:
         ValueError: If rows or cols is less or equal zero
     """
-    if rows <= 0:
-        raise ValueError("Argument rows must be positive integer")
-    if cols <= 0:
-        raise ValueError("Argument cols must be positive integer")
     shape = shape_list(bbox)[-1]
     if shape ==4:
         var_multi = tf.constant([rows*1., cols*1., rows*1., cols*1.], dtype=tf.float32)
@@ -59,10 +55,6 @@ def normalize_bbox(bbox, rows, cols):
     Raises:
         ValueError: If rows or cols is less or equal zero
     """
-    if rows <= 0:
-        raise ValueError("Argument rows must be positive integer")
-    if cols <= 0:
-        raise ValueError("Argument cols must be positive integer")
     shape = shape_list(bbox)[-1]
     if shape ==4:
         var_multi = tf.constant([rows*1., cols*1., rows*1., cols*1.], dtype=tf.float32)
