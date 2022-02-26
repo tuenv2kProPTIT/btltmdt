@@ -102,7 +102,7 @@ class FPN(tf.keras.Model):
 @register_neck
 def fpn_5_on_input():
     cfg  = FPNConfig(
-        name="fpn_nb_5",
+        name="fpn_5_on_input",
         filters=256,
         num_nb_outs=5,
         add_extra_convs=True,
