@@ -14,4 +14,4 @@ def register(cls):
             'config':cfg,
             'instance':cls 
         }
-        
+    return cls

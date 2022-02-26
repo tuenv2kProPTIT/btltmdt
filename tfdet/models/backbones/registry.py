@@ -40,6 +40,7 @@ def register(cls):
         'config':cfg,
         'instance':cls
     }
+    return cls
 def get_backbone(cfg):
     name=cfg.pop("name","").lower()
     if name in _backbone_class_sum:

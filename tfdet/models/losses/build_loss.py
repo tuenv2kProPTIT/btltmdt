@@ -7,7 +7,7 @@ def register(cls):
         'config':cfg,
         'instance':cls
     }
-
+    return cls
 def build_loss(cfg):
     name = cfg.get("name",None)
     if name:

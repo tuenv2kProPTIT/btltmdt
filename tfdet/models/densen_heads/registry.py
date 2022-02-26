@@ -38,6 +38,7 @@ def register(cls):
         'config':cfg,
         'instance':cls
     }
+    return cls
 def get_densen_head(cfg):
     name=cfg.pop("name","").lower()
     if name in _densen_head:

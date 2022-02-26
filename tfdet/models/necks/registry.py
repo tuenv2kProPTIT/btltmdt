@@ -39,6 +39,7 @@ def register(cls):
         'config':cfg,
         'instance':cls
     }
+    return cls
 def get_neck(cfg):
     name=cfg.pop("name","").lower()
     if name in _neck_register:
