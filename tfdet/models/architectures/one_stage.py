@@ -85,7 +85,7 @@ class OneStageModel(tf.keras.Model):
         return self.backbone.dummy_inputs
 
     def train_step(self, data):
-        image  =data['images']
+        image  =data['image']
         bboxes = data['bboxes']
         labels = data['labels']
         mask_label = data['mask']
