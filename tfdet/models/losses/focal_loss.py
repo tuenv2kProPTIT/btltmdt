@@ -30,7 +30,7 @@ class FocalLoss:
     
     def compute_loss(self, pred, target, weights):
         num_classes = shape_list(pred)[-1]
-        target = tf.one_hot(target,  depth=num_classes)
+        target = tf.one_hot(tf.reshape(target,[-1,]),  depth=num_classes)
         loss_cls =focal_loss_funtion(pred, target) 
         weights = tf.reshape(weights,(-1,))
         loss_cls = loss_cls * weights * self.cfg.loss_weight
