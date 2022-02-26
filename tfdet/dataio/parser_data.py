@@ -169,7 +169,7 @@ class InputProcessing:
     def dataset_parser(self, value, example_decoder):
         with tf.name_scope('parser'):
             data = example_decoder.decode(value)
-            image = data['image']
+            image = tf.cast(data['image'], tf.float32)
             boxes = data['groundtruth_boxes']
             classes = data['groundtruth_classes']
             classes = tf.reshape(tf.cast(classes, dtype=tf.float32), [-1, 1])
