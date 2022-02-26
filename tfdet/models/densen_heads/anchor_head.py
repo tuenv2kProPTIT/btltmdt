@@ -115,16 +115,16 @@ class AnchorHead(tf.keras.Model):
 
     def loss_fn_reduce_on_features(self, cls_score, bbox_pred, anchor_level, target_boxes, target_labels, mask_labels):
         """
-        cls_score: 1,w,h,num_anchors * num_classes
-        bbox_pred: 1,w,h,num_anchors * 4
+        cls_score: w,h,num_anchors * num_classes
+        bbox_pred: w,h,num_anchors * 4
         anchor_level: 1,m,4
         
         function work on batch_size is 1: reduce_memory but incresea time to training.
         """
         shape_list_feature=shape_list(cls_score)
-        cls_score = tf.reshape(cls_score,[1* shape_list_feature[1] * shape_list_feature[2] * self.num_anchors,self.cfg.num_classes])
+        cls_score = tf.reshape(cls_score,[1* shape_list_feature[0] * shape_list_feature[1] * self.num_anchors,self.cfg.num_classes])
         # bs,M,num_classes
-        bbox_pred = tf.reshape(bbox_pred, [1* shape_list_feature[1] * shape_list_feature[2] * self.num_anchors, 4 ])
+        bbox_pred = tf.reshape(bbox_pred, [1* shape_list_feature[1] * shape_list_feature[0] * self.num_anchors, 4 ])
         # bs,M,4
 
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_targets=mask_labels)
