@@ -55,12 +55,12 @@ def longest_max_size(img, max_size, interpolation):
 
 def resize(img, height, width, interpolation=tf.image.ResizeMethod.BILINEAR):
     img_height, img_width =  shape_list(img)[-3:-1]
-    if height == img_height and width == img_width:
-        return img
-    return tf.image.resize(img, [height, width], method=interpolation)
+    cond = tf.logical_and(tf.equal(height, img_height), tf.equal(width, img_width))
+    return tf.cond(cond, lambda : img, lambda :tf.image.resize(img, [height, width], method=interpolation))
+    
 
 
 def scale(img, scale, interpolation=tf.image.ResizeMethod.BILINEAR):
     height, width = shape_list(img)[-3:-1]
-    new_height, new_width = int(height * scale), int(width * scale)
+    new_height, new_width =tf.cast( tf.cast(height,tf.float32) * scale, tf.int32), tf.cast( tf.cast(width,tf.float32) * scale, tf.int32)
     return resize(img, new_height, new_width, interpolation)
