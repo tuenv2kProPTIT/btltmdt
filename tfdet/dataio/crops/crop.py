@@ -211,10 +211,11 @@ class RandomResizedCrop(_BaseRandomSizedCrop):
         encode = tf.cond(tf.logical_and(out_of_width, out_of_height),lambda : inside_attemp(w,h),outside_attemp)
         params.update(encode)
         crop = F.random_crop(img, params['crop_height'], params['crop_width'],params['h_start'], params['w_start'])
-        img= FR.resize(crop, self.height, self.width, params['interpolation'])
+        img= FR.resize(crop, params['height'], params['width'], params['interpolation'])
         data_dict.update(
             image=img 
         )
+        # print(params)
         if 'bboxes' in data_dict:
             bboxes = self.apply_box(data_dict['bboxes'], params)
             data_dict.update(

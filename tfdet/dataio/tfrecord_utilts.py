@@ -94,7 +94,7 @@ def convert_dataset_to_tfrecord(
     '''
     os.makedirs(output_dir,exist_ok=True)
     writers = [
-      tf.io.TFRecordWriter(os.path.join(output_dir , '-%05d-of-%05d.tfrecord' %
+      tf.io.TFRecordWriter(os.path.join(output_dir , '%06d-of-%06d.tfrecord' %
                            (i, num_shards))) for i in range(num_shards)
     ]
 
