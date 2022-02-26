@@ -99,8 +99,10 @@ def crop_bbox_by_coords(
 
 def get_random_crop_coords(height: int, width: int, crop_height: int, crop_width: int, h_start: float, w_start: float):
     y1 = tf.round( tf.cast(height - crop_height,tf.float32) * h_start)
+    y1 = tf.cast(y1, tf.int32)
     y2 = y1 + crop_height
     x1 = tf.round( tf.cast(width - crop_width,tf.float32) * w_start) 
+    x1 = tf.cast(x1, tf.int32)
     x2 = x1 + crop_width
     return x1, y1, x2, y2
 
@@ -126,5 +128,10 @@ def random_crop(img:tf.Tensor, crop_height: int, crop_width: int, h_start: float
         pass
     tf.cond(check, error, not_error)
     x1, y1, x2, y2 = get_random_crop_coords(height, width, crop_height, crop_width, h_start, w_start)
-    img = img[...,y1:y2, x1:x2]
+    # img = img[...,y1:y2, x1:x2]
+    shape = shape_list(img)
+    if len(shape) ==3:
+        img =  tf.slice(img,[y1,x1,0],[y2-y1,x2-x1,3])
+    elif len(shape) == 4:
+        img = tf.slice(img, [0,y1,x1,0], [shape[0], y2-y1, x2-x1, 3])
     return img

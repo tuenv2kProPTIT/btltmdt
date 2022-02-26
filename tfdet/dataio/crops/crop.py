@@ -182,8 +182,8 @@ class RandomResizedCrop(_BaseRandomSizedCrop):
             j = tf.random.uniform([], 0 , shape[1] - w, dtype=tf.int32)
 
             return {
-                "crop_height": h,
-                "crop_width": w,
+                "crop_height": tf.cast(h,tf.int32),
+                "crop_width":  tf.cast(w,tf.int32),
                 "h_start": tf.cast(i,tf.float32)  /(tf.cast(shape[0] - h, tf.float32) + 1e-10),
                 "w_start": tf.cast(j,tf.float32)  / (tf.cast(shape[1] - w,tf.float32) + 1e-10),
             }
@@ -203,8 +203,8 @@ class RandomResizedCrop(_BaseRandomSizedCrop):
             j = tf.round(tf.cast(shape[1] - w,tf.float32) / 2.)
             
             return {
-                "crop_height": h,
-                "crop_width": w,
+                "crop_height": tf.cast(h,tf.int32),
+                "crop_width":  tf.cast(w,tf.int32),
                 "h_start": i  /(tf.cast(shape[0] - h, tf.float32) + 1e-10),
                 "w_start": j  / (tf.cast(shape[1] - w,tf.float32) + 1e-10),
             }
