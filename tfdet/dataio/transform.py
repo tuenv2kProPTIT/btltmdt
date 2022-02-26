@@ -43,6 +43,6 @@ class Transform(tf.keras.layers.Layer):
             tf.floor(tf.random.uniform([], dtype=tf.float32) + prob), tf.bool)
         return tf.cond(
             should_apply_op,
-            self.apply(data_dict, training=training),
+            lambda : self.apply(data_dict, training=training),
             lambda : data_dict
         )
