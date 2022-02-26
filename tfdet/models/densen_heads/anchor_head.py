@@ -129,6 +129,7 @@ class AnchorHead(tf.keras.Model):
 
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_tagets=mask_labels)
         index_matching = self.sampler.sampler(index_matching)
+        print("index_matching",index_matching)
         # -2 for ignore,-1 negative, index for positive
         print("taget",target_boxes)
         matched_gt_boxes = gather_based_on_match(

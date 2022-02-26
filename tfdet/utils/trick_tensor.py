@@ -35,6 +35,7 @@ def gather_based_on_match(
             input_tensor],
         axis=0)
     gather_indices = tf.maximum(param_to_gather + 2, 0)
+    print("input_tensor", input_tensor,'gather_indicies', gather_indices)
     if name_ops =='gather_matmul':
         gathered_tensor = matmul_gather_on_zeroth_axis(input_tensor, gather_indices)
     else:
