@@ -4,6 +4,7 @@ import tensorflow as tf
 import PIL.Image
 import hashlib
 import io,json,os
+from tqdm import tqdm
 def _bytes_feature(value):
   """Returns a bytes_list from a string / byte."""
   if isinstance(value, type(tf.constant(0))):
@@ -62,7 +63,7 @@ def serializable_feature(image_dict):
         ymin.append(float(y) / height)
         ymax.append(float(y + height) / height)
         category_ids.append(label['id'])
-        category_names.append(label['name'])
+        category_names.append(str(label['name']).encode("utf8"))
     feature_dict.update({
         'image/object/bbox/xmin':
             float_list_feature(xmin),
@@ -97,7 +98,7 @@ def convert_dataset_to_tfrecord(
                            (i, num_shards))) for i in range(num_shards)
     ]
 
-    for idx,image_object in enumerate(datasets):
+    for idx,image_object in tqdm(enumerate(datasets)):
         example =serializable_feature(image_object)
         writers[idx % num_shards].write(example.SerializeToString())
         if idx % total_log == 0:

@@ -1,8 +1,5 @@
-
-
-from tfdet.models.losses.focal_loss import FocalLoss,FocalLossConfig
-from tfdet.models.losses.smooth_l1_loss import SmoothL1Loss, SmoothL1LossConfig
 _loss_register={}
+
 def register(cls):
     cfg=cls.cfg_class 
     name=cfg.name.lower()
