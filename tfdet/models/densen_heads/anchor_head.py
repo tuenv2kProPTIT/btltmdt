@@ -121,6 +121,8 @@ class AnchorHead(tf.keras.Model):
         
         function work on batch_size is 1: reduce_memory but incresea time to training.
         """
+        target_labels=tf.reshape(target_labels,[-1,])
+        mask_labels = tf.reshape(mask_labels, [-1,])
         shape_list_feature=shape_list(cls_score)
         cls_score = tf.reshape(cls_score,[1* shape_list_feature[0] * shape_list_feature[1] * self.num_anchors,self.cfg.num_classes])
         # bs,M,num_classes

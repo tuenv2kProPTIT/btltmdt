@@ -41,8 +41,8 @@ class DeltaXYWH():
 
         tx = (x - x_a) / w_a
         ty = (y - y_a) / h_a
-        tw = tf.log(w / w_a)
-        th = tf.log(h / h_a)
+        tw = tf.math.log(w / w_a)
+        th = tf.math.log(h / h_a)
         
         ty *= self.cfg.scale_factors[0]
         tx *= self.cfg.scale_factors[1]
@@ -57,7 +57,7 @@ class DeltaXYWH():
         tx /= self.cfg.scale_factors[1]
         th /= self.cfg.scale_factors[2]
         tw /= self.cfg.scale_factors[3]
-        w = tf.exp(tw) * wa
+        w = tf.exp(tw) * wa 
         h = tf.exp(th) * ha
         ycenter = ty * ha + ycenter_a
         xcenter = tx * wa + xcenter_a

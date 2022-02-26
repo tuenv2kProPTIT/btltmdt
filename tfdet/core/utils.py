@@ -53,7 +53,7 @@ def iou(boxlist1, boxlist2, scope=None):
     intersections = intersection(boxlist1, boxlist2)
     areas1 = area(boxlist1)
     areas2 = area(boxlist2)
-    print("area",areas1)
+    # print("area",areas1)
     unions = (
         tf.expand_dims(areas1, 1) + tf.expand_dims(areas2, 0) - intersections)
     return tf.where(
