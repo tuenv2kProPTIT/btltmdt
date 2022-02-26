@@ -1,7 +1,7 @@
 from turtle import width
 from typing import Dict
 import tensorflow as tf 
-from dataclasses import dataclass
+from dataclasses import dataclass,asdict
 from tfdet.dataio.resizes import functions as F
 from tfdet.dataio.registry import register
 from tfdet.utils.serializable import keras_serializable
@@ -34,7 +34,7 @@ class Transform(tf.keras.layers.Layer):
     def apply_keypoint(self, keypoint, dict_params=None):
         pass 
     def get_params(self,training=None):
-        return self.cfg.asdict()
+        return asdict(self.cfg)
     def apply(self, data_dict, training=None):
         pass
     def call(self, data_dict, training=None):
