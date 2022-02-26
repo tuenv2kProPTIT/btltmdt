@@ -34,7 +34,7 @@ class Transform(tf.keras.layers.Layer):
     def apply_keypoint(self, keypoint, dict_params=None):
         pass 
     def get_params(self,training=None):
-        return self.cfg.as_dict()
+        return self.cfg.asdict()
     def apply(self, data_dict, training=None):
         pass
     def call(self, data_dict, training=None):

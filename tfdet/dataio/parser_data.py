@@ -178,7 +178,7 @@ class InputProcessing:
             classes = tf.reshape(tf.cast(classes, dtype=tf.float32), [-1, 1])
             mask = tf.ones_like(classes)
         data_parser= {
-           
+            'filename':data['filename'],
             'image':image,
             'bboxes':boxes,
             "labels":classes,
