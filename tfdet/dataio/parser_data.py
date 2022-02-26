@@ -142,14 +142,14 @@ class InputProcessing:
         dataset = tf.data.Dataset.list_files(
             self.cfg.pattern_file,
             shuffle = self.cfg.shuffle,
-            sedd=self.cfg.seed
+            seed=self.cfg.seed
         )
         def _prefetch_dataset(filename):
             dataset = tf.data.TFRecordDataset(filename).prefetch(1)
             return dataset
         dataset = dataset.interleave(_prefetch_dataset, num_parallel_calls=tf.data.AUTOTUNE)
         options = tf.data.Options()
-        options.deterministic = self._debug 
+        options.deterministic = self.cfg.debug 
         options.experimental_optimization.map_parallelization = True
         options.experimental_optimization.parallel_batch = True
 
@@ -160,7 +160,7 @@ class InputProcessing:
         example_decoder = TfExampleDecoder(
             include_mask=self.cfg.include_mask
         )
-        map_fn = lambda key, value: self.dataset_parser(value, example_decoder)
+        map_fn = lambda  value: self.dataset_parser(value, example_decoder)
         dataset = dataset.map(map_fn, num_parallel_calls=tf.data.AUTOTUNE)
         return dataset
     @tf.autograph.experimental.do_not_convert

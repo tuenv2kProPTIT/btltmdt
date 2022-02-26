@@ -39,9 +39,8 @@ class SmallestMaxSizeConfig(TransformConfig):
     always_apply:bool=False
     p:float=1.
 
-
-@keras_serializable    
 @register
+@keras_serializable    
 class LongestMaxSize(Transform):
     cfg_class = LongestMaxSizeConfig
     def __init__(self, cfg:LongestMaxSizeConfig, *args, **kwargs):
@@ -74,8 +73,8 @@ class LongestMaxSize(Transform):
 
         return data_dict
 
-@keras_serializable    
 @register
+@keras_serializable 
 class RandomScale (Transform):
     cfg_class = RandomScaleConfig
     def __init__(self, cfg:RandomScaleConfig, *args, **kwargs):
@@ -107,8 +106,8 @@ class RandomScale (Transform):
             )
         return data_dict
 
-@keras_serializable
 @register
+@keras_serializable 
 class Resize(Transform):
     cfg_class=ResizeConfig
     
@@ -125,8 +124,8 @@ class Resize(Transform):
             )
         return data_dict
 
-@keras_serializable
 @register
+@keras_serializable 
 class SmallestMaxSize(Transform):
     cfg_class=SmallestMaxSizeConfig
 

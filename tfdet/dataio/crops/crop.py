@@ -17,8 +17,8 @@ class CenterCropConfig(TransformConfig):
     height: int = None 
     width: int = None 
 
-@keras_serializable
 @register
+@keras_serializable 
 class CenterCrop(Transform):
     cfg_class=CenterCropConfig
     def apply_box(self, bboxes, dict_params=None):
@@ -106,7 +106,7 @@ class RandomSizedCropConfig(BaseRandomSizedCropConfig):
     min_max_height : Tuple[int,int] =None
     w2h_ratio : float = 1.0 
 @register
-@keras_serializable
+@keras_serializable 
 class RandomSizedCrop(_BaseRandomSizedCrop):
 
     cfg_class=RandomSizedCropConfig
@@ -140,8 +140,8 @@ class RandomResizedCropConfig(BaseRandomSizedCropConfig):
     scale: Tuple[float,float]=field(default_factory= lambda: (0.08, 1.0))
     ratio: Tuple[float,float]=field(default_factory= lambda: (0.75, 1.3333333333333333) )
 
-@keras_serializable
 @register
+@keras_serializable 
 class RandomResizedCrop(_BaseRandomSizedCrop):
     cfg_class = RandomResizedCropConfig
 
