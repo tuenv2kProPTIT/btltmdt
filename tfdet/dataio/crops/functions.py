@@ -80,9 +80,10 @@ def crop_bbox_by_coords(
     shape = shape_list(bbox)[-1]
     x1, y1, _, _ = crop_coords
     crop_cord =[y1, x1, y1, x1]
-    if shape > 4:
-        crop_cord.extend([0. for i in range(shape-4)])
-    crop_coords =tf.constant(crop_cord,dtype=tf.float32)
+
+    crop_coords =tf.stack(crop_cord)
+    crop_coords= tf.cast(crop_coords,dtype=tf.float32)
+    crop_coords=tf.reshape(crop_coords,[1,-1])
     cropped_bbox = bbox - crop_cord
     return normalize_bbox(cropped_bbox, crop_height, crop_width)
 
