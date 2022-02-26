@@ -175,7 +175,7 @@ class InputProcessing:
             classes = tf.reshape(tf.cast(classes, dtype=tf.float32), [-1, 1])
             areas = data['groundtruth_area']
             image_masks = data.get('groundtruth_instance_masks', [])
-            classes = tf.reshape(tf.cast(classes, dtype=tf.float32), [-1, 1])
+            classes = tf.reshape(tf.cast(classes, dtype=tf.int32), [-1, 1])
             mask = tf.ones_like(classes)
         data_parser= {
             'filename':data['filename'],

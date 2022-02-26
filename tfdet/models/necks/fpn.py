@@ -22,7 +22,7 @@ class FPNConfig(NeckConfig):
     no_norm_on_lateral=False
     act_layer: str = None
     norm_layer: str =None
-    upsample_cfg:Dict=field(default_factory=lambda: dict(mode='nearest',scale_factor=2))
+    upsample_cfg:Dict=field(default_factory=lambda: dict(interpolation='nearest',scale_factor=2))
 @register
 @keras_serializable
 class FPN(tf.keras.Model):
