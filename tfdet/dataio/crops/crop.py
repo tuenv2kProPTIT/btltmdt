@@ -151,7 +151,7 @@ class RandomResizedCrop(_BaseRandomSizedCrop):
         shape = shape_list(img)[-3:-1]
         params['rows'] = shape[0]
         params['cols'] = shape[1]
-        area = shape[0] * shape[1] 
+        area = tf.cast(shape[0] * shape[1], tf.float32) 
 
 
         def condition(index, w_pred, h_pred):
@@ -180,31 +180,33 @@ class RandomResizedCrop(_BaseRandomSizedCrop):
         def inside_attemp(w,h):
             i=tf.random.uniform([],0, shape[0] - h, dtype=tf.int32)
             j = tf.random.uniform([], 0 , shape[1] - w, dtype=tf.int32)
+
             return {
                 "crop_height": h,
                 "crop_width": w,
-                "h_start": i * 1.0 / (shape[0] - h + 1e-10),
-                "w_start": j * 1.0 / (shape[1] - w + 1e-10),
+                "h_start": tf.cast(i,tf.float32)  /(tf.cast(shape[0] - h, tf.float32) + 1e-10),
+                "w_start": tf.cast(j,tf.float32)  / (tf.cast(shape[1] - w,tf.float32) + 1e-10),
             }
 
         def outside_attemp():
             in_ratio = shape[1] / shape[0]
             if in_ratio < min(params['ratio']):
                 w = shape[1]
-                h = int(round(w / min(params['ratio'])))
+                h = tf.cast(tf.round(tf.cast(w,tf.float32) / min(params['ratio'])), tf.int32)
             elif in_ratio > max(params['ratio']):
                 h = shape[0]
-                w = int(round(h * max(params['ratio'])))
+                w = tf.cast(tf.round(tf.cast(h,tf.float32) * max(params['ratio'])), tf.int32)
             else:  # whole image
                 w = shape[1]
                 h = shape[0]
-            i = (img.shape[0] - h) // 2
-            j = (img.shape[1] - w) // 2
+            i = tf.round(tf.cast(shape[0] - h,tf.float32) / 2.)
+            j = tf.round(tf.cast(shape[1] - w,tf.float32) / 2.)
+            
             return {
                 "crop_height": h,
                 "crop_width": w,
-                "h_start": i * 1.0 / (shape[0] - h + 1e-10),
-                "w_start": j * 1.0 / (shape[1] - w + 1e-10),
+                "h_start": i  /(tf.cast(shape[0] - h, tf.float32) + 1e-10),
+                "w_start": j  / (tf.cast(shape[1] - w,tf.float32) + 1e-10),
             }
         encode = tf.cond(tf.logical_and(out_of_width, out_of_height),lambda : inside_attemp(w,h),outside_attemp)
         params.update(encode)

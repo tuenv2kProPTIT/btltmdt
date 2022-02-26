@@ -113,3 +113,16 @@ def bbox_random_crop(
 ):
     crop_coords = get_random_crop_coords(rows, cols, crop_height, crop_width, h_start, w_start)
     return crop_bbox_by_coords(bbox, crop_coords, crop_height, crop_width, rows, cols)
+
+def random_crop(img:tf.Tensor, crop_height: int, crop_width: int, h_start: float, w_start: float):
+    height, width =shape_list(img)[-3:-1]
+    if height < crop_height or width < crop_width:
+        raise ValueError(
+            "Requested crop size ({crop_height}, {crop_width}) is "
+            "larger than the image size ({height}, {width})".format(
+                crop_height=crop_height, crop_width=crop_width, height=height, width=width
+            )
+        )
+    x1, y1, x2, y2 = get_random_crop_coords(height, width, crop_height, crop_width, h_start, w_start)
+    img = img[...,y1:y2, x1:x2]
+    return img
