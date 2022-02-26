@@ -54,7 +54,7 @@ class ConfigOneStage:
         act_cfg='relu',
         num_classes=20,
 
-        loss_cls= {"name":'CrossEntropyLoss','use_sigmoid':True, 'loss_weight':1.0},
+        loss_cls= {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.0},
         loss_bbox={'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0},
 
         train_cfg=dict(
@@ -78,6 +78,10 @@ class OneStageModel(tf.keras.Model):
         neck=self.neck(features, training=training)
         cls_score,bbox_score = self.head(neck, training=training)
         return cls_score, bbox_score
+
+    @property
+    def dummy_inputs(self) -> tf.Tensor:
+        return self.backbone.dummy_inputs
 
     def train_step(self, data):
         image  =data['images']

@@ -57,11 +57,11 @@ def serializable_feature(image_dict):
     encoded_mask_png = []
 
     for bbox,label in zip(bbox_annotations, label_annotation):
-        y,x,h,w = bbox 
-        xmin.append(float(x) / width)
-        xmax.append(float(x + width) / width)
-        ymin.append(float(y) / height)
-        ymax.append(float(y + height) / height)
+        y_min,x_min,y_max,x_max = bbox 
+        xmin.append(float(x_min) / width)
+        xmax.append(float(x_max) / width)
+        ymin.append(float(y_min) / height)
+        ymax.append(float(y_max) / height)
         category_ids.append(label['id'])
         category_names.append(str(label['name']).encode("utf8"))
     feature_dict.update({
