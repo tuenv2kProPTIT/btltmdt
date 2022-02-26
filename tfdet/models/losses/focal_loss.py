@@ -9,8 +9,8 @@ class FocalLossConfig:
     alpha: float=0.25
     use_sigmoid:bool  = True 
     loss_weight:float = 1.0
-    name='FocalLoss'
-    last_modified='25/02/2022'
+    name:str='FocalLoss'
+    last_modified:str='25/02/2022'
 
 @tf.function(experimental_relax_shapes=True)
 def focal_loss_funtion(pred, target, alpha = 0.25, gamma = 2., label_smoothing = 0.):

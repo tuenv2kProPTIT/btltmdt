@@ -7,8 +7,8 @@ from tfdet.models.losses.build_loss import register
 class SmoothL1LossConfig:
     beta:float=1.0
     loss_weights: float=1.0
-    name='SmoothL1Loss'
-    last_modified='25/02/2022'
+    name:str='SmoothL1Loss'
+    last_modified:str='25/02/2022'
 
 @register
 class SmoothL1Loss:
