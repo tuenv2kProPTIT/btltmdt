@@ -83,7 +83,7 @@ class RandomScale (Transform):
         self.cfg.scale_limit = to_tuple(self.cfg.scale_limit)
     def get_params(self, training=None):
         param=super().get_params(training=training)
-        param.upadte(scale= tf.random.uniform([],self.cfg.scale_limit[0], self.cfg.scale_limit[1]))
+        param.update(scale= tf.random.uniform([],self.cfg.scale_limit[0], self.cfg.scale_limit[1]))
         return param
     def apply_keypoint(self, keypoint, dict_params=None):
         """function is wrong, for future work!
