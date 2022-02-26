@@ -27,6 +27,7 @@ class MaxIOUAssigner:
         '''
         if self.cfg.iou_calculator=='IouSimilarity':
             match = iou(targets, anchors)
+            print("iou",match)
         else:
             raise ValueError(self.cfg.iou_calculator)
         return self._match(match, ignore_tagets)
