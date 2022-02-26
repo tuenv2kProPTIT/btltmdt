@@ -158,12 +158,12 @@ class AnchorHead(tf.keras.Model):
         )
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
 
-        loss_bbox = self.cal_loss_bboxes(
+        loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
             matched_reg_targets,
             mask_reg_targets
         )
-        loss_cls = self.cal_loss_classes(
+        loss_cls = self.cal_loss_classes.compute_loss(
             cls_score,
             matched_gt_classes,
             mask_classes_tagets
