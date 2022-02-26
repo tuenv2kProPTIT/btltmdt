@@ -27,7 +27,7 @@ class AnchorHeadConfig(HeadConfig):
     norm_cfg: Union[Dict, str] = field(default_factory=lambda:'')
     num_classes: int = 80
 
-    loss_cls : Dict = field(default_factory=lambda: {"name":'CrossEntropyLoss','use_sigmoid':True, 'loss_weight':1.0})
+    loss_cls : Dict = field(default_factory=lambda: {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.0})
     loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0})
 
     test_cfg : Dict = field(default_factory=lambda:{''})

@@ -1,4 +1,5 @@
 from dataclasses import dataclass,field
+from unicodedata import name
 from tfdet.models.necks.registry import register_neck
 from tfdet.models.config import NeckConfig
 from tfdet.models.layers.act_norm_conv import Conv2DNorm
@@ -7,13 +8,15 @@ import tensorflow as tf
 from typing import Dict
 @dataclass
 class FPNConfig(NeckConfig):
+    name = 'FPN'
+    last_modified='26/02/2022'
     filters: int = 256
     start_level:int = 0
     end_level: int = -1 
     num_nb_ins: int = 4
     num_nb_outs: int = None 
     
-    add_extra_convs=False
+    add_extra_convs:bool=False
     extra_convs_on: str = "on_input"
     relu_before_extra_convs : bool = False
     no_norm_on_lateral=False
