@@ -41,8 +41,9 @@ class Transform(tf.keras.layers.Layer):
         prob=self.cfg.p
         should_apply_op = tf.cast(
             tf.floor(tf.random.uniform([], dtype=tf.float32) + prob), tf.bool)
-        return tf.cond(
+        data_dict= tf.cond(
             should_apply_op,
             lambda : self.apply(data_dict, training=training),
             lambda : data_dict
         )
+        return data_dict
