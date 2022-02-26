@@ -18,13 +18,13 @@ def get_center_coordinates_and_sizes(box_corners, scope='None'):
     Returns:
       a list of 4 1-D tensors [ycenter, xcenter, height, width].
     """
-    with tf.name_scope(scope, 'get_center_coordinates_and_sizes'):
-      ymin, xmin, ymax, xmax = tf.unstack(tf.transpose(box_corners))
-      width = xmax - xmin
-      height = ymax - ymin
-      ycenter = ymin + height / 2.
-      xcenter = xmin + width / 2.
-      return [ycenter, xcenter, height, width]
+    # with tf.name_scope(scope, 'get_center_coordinates_and_sizes'):
+    ymin, xmin, ymax, xmax = tf.unstack(tf.transpose(box_corners))
+    width = xmax - xmin
+    height = ymax - ymin
+    ycenter = ymin + height / 2.
+    xcenter = xmin + width / 2.
+    return [ycenter, xcenter, height, width]
 class DeltaXYWH():
     cfg_class=DeltaXYWHConfig
     def __init__(self, cfg:DeltaXYWHConfig, *args, **kwargs) -> None:
