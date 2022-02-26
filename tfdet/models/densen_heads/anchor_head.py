@@ -1,6 +1,7 @@
 from dataclasses import dataclass,field
 import imp
 import numpy as np
+from tfdet.models.backbones.registry import register
 from tfdet.models.config import HeadConfig
 from tfdet.core.anchor.anchor_generator import AnchorConfig, AnchorGenerator
 from tfdet.core.assigner.max_iou_assigner import MaxIOUAssignerConfig, MaxIOUAssigner
@@ -37,7 +38,7 @@ class AnchorHeadConfig(HeadConfig):
 
     })
     last_modified:str='25/02/2022'
-
+@register
 @keras_serializable
 class AnchorHead(tf.keras.Model):
     cfg_class=AnchorHeadConfig
