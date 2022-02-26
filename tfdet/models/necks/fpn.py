@@ -70,7 +70,7 @@ class FPN(tf.keras.Model):
     def call(self, inputs, training=False):
         """Forward function."""
         laterals = [
-            lateral_conv(inputs[i + self.start_level], training=training)
+            lateral_conv(inputs[i + self.cfg.start_level], training=training)
             for i, lateral_conv in enumerate(self.lateral_convs)
         ]
         used_backbone_levels = len(laterals)
@@ -94,9 +94,9 @@ class FPN(tf.keras.Model):
                 outs.append(self.fpn_convs[used_backbone_levels](extra_source))
                 for i in range(used_backbone_levels + 1, self.cfg.num_nb_outs):
                     if self.cfg.relu_before_extra_convs:
-                        outs.append(self.fpn_convs[i](tf.nn.relu(outs[-1])))
+                        outs.append(self.fpn_convs[i](tf.nn.relu(outs[-1]), training=training) )
                     else:
-                        outs.append(self.fpn_convs[i](outs[-1]))
+                        outs.append(self.fpn_convs[i](outs[-1], training=training))
         return outs 
 
 
