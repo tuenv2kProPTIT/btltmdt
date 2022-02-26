@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass,field
 from tfdet.models.necks.registry import register_neck
 from tfdet.models.config import NeckConfig
 from tfdet.models.layers.act_norm_conv import Conv2DNorm
@@ -19,7 +19,7 @@ class FPNConfig(NeckConfig):
     no_norm_on_lateral=False
     act_layer: str = None
     norm_layer: str =None
-    upsample_cfg:Dict=dict(mode='nearest',scale_factor=2)
+    upsample_cfg:Dict=field(default_factory=lambda: dict(mode='nearest',scale_factor=2))
 
 @keras_serializable
 class FPN(tf.keras.Model):
