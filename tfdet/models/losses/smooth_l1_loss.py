@@ -6,7 +6,7 @@ from tfdet.models.losses.build_loss import register
 @dataclass
 class SmoothL1LossConfig:
     beta:float=1.0
-    loss_weights: float=1.0
+    loss_weight: float=1.0
     name:str='SmoothL1Loss'
     last_modified:str='25/02/2022'
 
@@ -26,7 +26,7 @@ class SmoothL1Loss:
         weights = tf.cast(weights,tf.float32) 
         weights = tf.reshape(weights,[-1,])
         loss= loss * weights
-        return tf.math.reduce_sum(loss) * self.cfg.loss_weights
+        return tf.math.reduce_sum(loss) * self.cfg.loss_weight
 
         
 
