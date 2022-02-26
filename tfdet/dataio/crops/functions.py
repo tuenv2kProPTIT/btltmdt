@@ -38,9 +38,9 @@ def denormalize_bbox(bbox, rows, cols):
     """
     shape = shape_list(bbox)[-1]
     if shape ==4:
-        var_multi = tf.constant([rows*1., cols*1., rows*1., cols*1.], dtype=tf.float32)
+        var_multi = tf.constant([rows, cols, rows, cols], dtype=tf.float32)
     else:
-        var_multi  = tf.constant([rows*1., cols*1., rows*1., cols*1.,] + [1.,] *int(shape - 4) , dtype=tf.float32)
+        var_multi  = tf.constant([rows, cols, rows, cols,] + [1.,] *int(shape - 4) , dtype=tf.float32)
     var_multi = tf.reshape(var_multi,[1,-1])
     return bbox * var_multi
 def normalize_bbox(bbox, rows, cols):
@@ -57,9 +57,9 @@ def normalize_bbox(bbox, rows, cols):
     """
     shape = shape_list(bbox)[-1]
     if shape ==4:
-        var_multi = tf.constant([rows*1., cols*1., rows*1., cols*1.], dtype=tf.float32)
+        var_multi = tf.constant([rows, cols, rows, cols], dtype=tf.float32)
     else:
-        var_multi  = tf.constant([rows*1., cols*1., rows*1., cols*1.] + [1.,] *int(shape - 4) , dtype=tf.float32)
+        var_multi  = tf.constant([rows, cols, rows, cols] + [1.,] *int(shape - 4) , dtype=tf.float32)
     var_multi = tf.reshape(var_multi,[1,-1])
     return tf.math.divide_no_nan(bbox,  var_multi) 
 
