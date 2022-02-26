@@ -79,7 +79,7 @@ class RandomScale (Transform):
     cfg_class = RandomScaleConfig
     def __init__(self, cfg:RandomScaleConfig, *args, **kwargs):
         super().__init__(cfg,*args, **kwargs)
-        self.cfg=cfg 
+         
         self.cfg.scale_limit = to_tuple(self.cfg.scale_limit)
     def get_params(self, training=None):
         param=super().get_params(training=training)

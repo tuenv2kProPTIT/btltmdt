@@ -25,7 +25,7 @@ class TransformConfig:
 class Transform(tf.keras.layers.Layer):
     cfg_class=TransformConfig
     def __init__(self, cfg:TransformConfig, *args, **kwargs):
-        if self.cfg.dynamic:
+        if cfg.dynamic:
             kwargs['dynamic']=True
         super().__init__(*args, **kwargs)
         self.cfg=cfg 
