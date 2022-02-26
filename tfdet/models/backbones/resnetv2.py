@@ -402,7 +402,7 @@ class ResNetV2(tf.keras.Model):
             + ["features", "logits"]
         )
 
-    def call(self, x, training=False, return_features=False):
+    def call(self, x, training=False, return_features=True):
         features = []
         x = self.stem(x)
         if return_features:

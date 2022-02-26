@@ -75,7 +75,7 @@ class OneStageModel(tf.keras.Model):
         self.neck = get_neck(self.cfg.neck)
         self.head = get_densen_head(self.cfg.head)
     def call(self, inputs, training=None):
-        features  =self.backbone(inputs, training=training)
+        features  =self.backbone(inputs, training=training,return_features=True)
         neck=self.neck(features, training=training)
         cls_score,bbox_score = self.head(neck, training=training)
         return cls_score, bbox_score
