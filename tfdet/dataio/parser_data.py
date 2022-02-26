@@ -19,6 +19,7 @@ class TfExampleDecoder:
             'image/object/bbox/ymin': tf.io.VarLenFeature(tf.float32),
             'image/object/bbox/ymax': tf.io.VarLenFeature(tf.float32),
             'image/object/class/label': tf.io.VarLenFeature(tf.int64),
+            'image/filename': tf.io.FixedLenFeature((), tf.string) 
 
         }
         if include_mask:
@@ -110,6 +111,7 @@ class TfExampleDecoder:
             masks = self._decode_masks(parsed_tensors)
 
         decoded_tensors = {
+            "filename":parsed_tensors['image/filename'],
             'image': image,
             'height': parsed_tensors['image/height'],
             'width': parsed_tensors['image/width'],
@@ -177,7 +179,7 @@ class InputProcessing:
             mask = tf.ones_like(classes)
         data_parser= {
            
-            'images':image,
+            'image':image,
             'bboxes':boxes,
             "labels":classes,
             'areas':areas,
