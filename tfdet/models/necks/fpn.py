@@ -1,6 +1,6 @@
 from dataclasses import dataclass,field
 from unicodedata import name
-from tfdet.models.necks.registry import register_neck
+from tfdet.models.necks.registry import register_neck, register
 from tfdet.models.config import NeckConfig
 from tfdet.models.layers.act_norm_conv import Conv2DNorm
 from tfdet.utils.serializable import keras_serializable
@@ -23,7 +23,7 @@ class FPNConfig(NeckConfig):
     act_layer: str = None
     norm_layer: str =None
     upsample_cfg:Dict=field(default_factory=lambda: dict(mode='nearest',scale_factor=2))
-
+@register
 @keras_serializable
 class FPN(tf.keras.Model):
     cfg_class=FPNConfig
@@ -99,15 +99,5 @@ class FPN(tf.keras.Model):
                         outs.append(self.fpn_convs[i](outs[-1]))
         return outs 
 
-@register_neck
-def fpn_5_on_input():
-    cfg  = FPNConfig(
-        name="fpn_5_on_input",
-        filters=256,
-        num_nb_outs=5,
-        add_extra_convs=True,
-        relu_before_extra_convs=False,
 
-    )
-    return FPN, cfg
 

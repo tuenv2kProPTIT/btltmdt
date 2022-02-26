@@ -44,7 +44,7 @@ def register(cls):
 def get_backbone(cfg):
     name=cfg.pop("name","").lower()
     if name in _backbone_class_sum:
-        return _backbone_class_sum[name]
+        return _backbone_class_sum[name]['instance'](_backbone_class_sum[name]['config'](**cfg))
     raise Exception(f"class with name = {name} didn't register at anywhere")
 def register_backbone(fn):
     # Get model class and model config

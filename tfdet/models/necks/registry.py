@@ -43,7 +43,7 @@ def register(cls):
 def get_neck(cfg):
     name=cfg.pop("name","").lower()
     if name in _neck_register:
-        return _neck_register[name]
+        return _neck_register[name]['instance']( _neck_register[name]['config'](**cfg))
     raise Exception(f"class neck with name = {name} didn't register at anywhere")
 
 def register_neck(fn):
