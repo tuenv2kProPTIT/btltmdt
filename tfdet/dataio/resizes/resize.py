@@ -44,7 +44,7 @@ class SmallestMaxSizeConfig(TransformConfig):
 class LongestMaxSize(Transform):
     cfg_class = LongestMaxSizeConfig
     def __init__(self, cfg:LongestMaxSizeConfig, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(cfg,*args, **kwargs)
         self.cfg=cfg 
     def apply_box(self, bboxes, dict_params=None):
         return bboxes
@@ -78,7 +78,7 @@ class LongestMaxSize(Transform):
 class RandomScale (Transform):
     cfg_class = RandomScaleConfig
     def __init__(self, cfg:RandomScaleConfig, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(cfg,*args, **kwargs)
         self.cfg=cfg 
         self.cfg.scale_limit = to_tuple(self.cfg.scale_limit)
     def get_params(self, training=None):
