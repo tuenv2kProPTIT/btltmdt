@@ -143,7 +143,7 @@ class AnchorHead(tf.keras.Model):
             index_matching,
             name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
         )
-        print("matched",matched_gt_boxes )
+        # print("matched",matched_gt_boxes )
         matched_reg_targets =self.bbox_encode.encode(
             matched_gt_boxes,
             anchor_level
