@@ -104,7 +104,7 @@ class AnchorHead(tf.keras.Model):
         for level in range(len(cls_score)):
             # total_loss_box=[]
             # total_loss_cls=[]
-            loss_bbox, loss_cls = tf.vectorized_map(self.loss_fn_reduce_on_features, cls_score[level],bbox_pred[level],anchors[level], target_boxes,target_labels, mask_labels )
+            loss_bbox, loss_cls = tf.vectorized_map(self.loss_fn_reduce_on_features, (cls_score[level],bbox_pred[level],anchors[level], target_boxes,target_labels, mask_labels) )
             # for batch in range(self.cfg.train_cfg['batch_size']):
             #     loss_bbox, loss_cls = self.loss_fn_reduce_on_features(
             #         cls_score[level][batch,...], bbox_pred[level][batch,...],anchors[level], target_boxes[batch,...],target_labels[batch,...],mask_labels[batch,...]
