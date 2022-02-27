@@ -91,7 +91,7 @@ class OneOfConfig(TransformConfig):
 class OneOf(Transform):
     cfg_class = OneOfConfig
     def __init__(self, cfg: TransformConfig, *args, **kwargs):
-       
+        super().__init__(cfg, *args, **kwargs)
         list_pipe =self.cfg.list_pipeline
         list_functions=[]
         list_cfg_pipe = []
@@ -109,7 +109,7 @@ class OneOf(Transform):
 
 @dataclass
 class KeepAndProcessBBoxConfig(TransformConfig):
-    name = 'KeepAndProcessBBox'
+    name: str = 'KeepAndProcessBBox'
     keep_dict :Tuple[str] = ('id', 'image', 'bboxes', 'labels', 'mask')
 def denormalize_bbox(bbox, rows, cols):
     """Denormalize coordinates of a bounding box. Multiply x-coordinates by image width and y-coordinates
