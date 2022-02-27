@@ -94,11 +94,20 @@ class AnchorHead(tf.keras.Model):
                 padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
-
-   
+        shape_list_feature = [(128, 128), (64, 64), (32, 32), (16,16), (8,8)]
+        self.shape_anchor = (128,128)
+        self.anchors = tf.Variable(self.anchor_generator.grid_priors([ shape for shape in shape_list_feature]), trainable=False)
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
-        anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
+        cond = tf.equal(self.shape_anchor[0],shape_list[0][-3]) 
+        cond = tf.logical_and(tf.equal(self.shape_anchor[1], shape_list[0][-2]))
+        def is_same_shape():
+            return self.anchors
+        def is_not_same_shape():
+            anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
+            return anchors
+        anchors = tf.cond(cond, is_same_shape,is_not_same_shape )
+        self.anchors = anchors
         loss_dict={'cls_loss':[],'bbox_loss':[]}
         for level in range(len(cls_score)):
             total_loss_box=[]
