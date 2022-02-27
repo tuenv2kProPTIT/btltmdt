@@ -21,7 +21,7 @@ class Normalize(Transform):
         super().__init__(cfg, *args, **kwargs)
         self.cfg.mean = (self.cfg.mean, self.cfg.mean, self.cfg.mean) if isinstance(self.cfg.mean, float) else self.cfg.mean
         self.cfg.std = (self.cfg.std, self.cfg.std, self.cfg.std) if  isinstance(self.cfg.std, float) else self.cfg.std
-
+    @tf.function(experimental_relax_shapes=True)
     def apply(self, data_dict, training=None):
         params = self.get_params()
         mean = tf.constant(params['mean'],tf.float32)
