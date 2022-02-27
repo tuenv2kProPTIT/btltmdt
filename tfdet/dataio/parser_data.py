@@ -136,6 +136,7 @@ class InputProcessingConfig:
     bucket_size_shuffle: int =64
     debug: bool = False
     include_mask:bool=False
+@register
 class InputProcessing:
     cfg_class = InputProcessingConfig
     def __init__(self, cfg:InputProcessingConfig, *args, **kwargs):

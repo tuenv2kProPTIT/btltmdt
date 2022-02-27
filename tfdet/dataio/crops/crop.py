@@ -139,7 +139,7 @@ class RandomResizedCropConfig(BaseRandomSizedCropConfig):
     last_modified: str = '26/02/2022'
     scale: Tuple[float,float]=field(default_factory= lambda: (0.08, 1.0))
     ratio: Tuple[float,float]=field(default_factory= lambda: (0.75, 1.3333333333333333) )
-
+    p: float = 1.0
 @register
 @keras_serializable 
 class RandomResizedCrop(_BaseRandomSizedCrop):

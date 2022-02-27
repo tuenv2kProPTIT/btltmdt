@@ -12,6 +12,7 @@ class NormalizeConfig(TransformConfig):
     max_pixel_value: float = 255.
     mean: Tuple[float,float,float] = (0.485, 0.456, 0.406)
     std : Tuple[float, float, float] = (0.229, 0.224, 0.225)
+    p: float = 1.
 @register
 @keras_serializable
 class Normalize(Transform):

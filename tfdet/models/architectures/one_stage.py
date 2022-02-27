@@ -29,7 +29,7 @@ class ConfigOneStage:
         filters=256,
         add_extra_convs=True,
         extra_convs_on='on_input',
-        relu_before_extra_convs=True,
+        relu_before_extra_convs=False,
     ))
 
     head : Dict = field(default_factory= lambda : dict(

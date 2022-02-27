@@ -133,6 +133,7 @@ class AnchorHead(tf.keras.Model):
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_tagets=mask_labels)
 
         index_matching = self.sampler.sampler(index_matching)
+        index_matching = tf.stop_gradient(index_matching)
         # print("index_matching",index_matching)
         # -2 for ignore,-1 negative, index for positive
         # print("taget",target_boxes)
@@ -149,25 +150,26 @@ class AnchorHead(tf.keras.Model):
             anchor_level
         )
         mask_reg_targets = tf.where(index_matching >=0, 1, 0) 
-
+        total_matched = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
         matched_gt_classes = gather_based_on_match(
             target_labels,
             tf.constant([-1],tf.int32),
             tf.constant([-1],tf.int32),
             index_matching
-        )
+        ) 
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
+        total_hurt_score = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_classes_tagets),tf.float32))
 
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
             matched_reg_targets,
             mask_reg_targets
-        )
+        ) / (total_matched  )
         loss_cls = self.cal_loss_classes.compute_loss(
             cls_score,
             matched_gt_classes,
             mask_classes_tagets
-        )
+        ) / (total_hurt_score)
 
         return loss_bbox, loss_cls
 
