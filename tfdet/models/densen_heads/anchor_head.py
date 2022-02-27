@@ -100,6 +100,7 @@ class AnchorHead(tf.keras.Model):
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
+        anchors = [tf.expand_dims(anchor,0) for anchor in anchors ]
         loss_dict={'cls_loss':[],'bbox_loss':[]}
         for level in range(len(cls_score)):
             # total_loss_box=[]
