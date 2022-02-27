@@ -11,6 +11,7 @@ from ast import mod
 import fnmatch
 import re
 import sys
+import dataclasses
 from collections import defaultdict
 from copy import deepcopy
 from typing import List, Union
@@ -45,6 +46,9 @@ def register(cls):
 def get_backbone(cfg):
     name=cfg.get("name","")
     if name in list_backbones():
+        cfg_instance = backbones_config(name)
+        cfg_instance=dataclasses.replace(cfg_instance)
+        cfg_instance.update(cfg)
         instance= backbones_class(name)(backbones_config(name)(**cfg))
         if 'url' in cfg:
             if cfg['url'] == 'timm':
