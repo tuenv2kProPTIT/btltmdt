@@ -16,7 +16,7 @@ def register(cls):
         }
     return cls
 def get_pipeline(cfg):
-    name = cfg['name']
+    name = cfg['name'].lower()
     if name in _all_pipeline:
         dict_cls = _all_pipeline[name]
         return dict_cls['instance'](dict_cls['config'](**cfg))
