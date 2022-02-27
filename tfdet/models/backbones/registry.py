@@ -49,7 +49,10 @@ def get_backbone(cfg):
         cfg_instance = backbones_config(name)
         cfg_instance=dataclasses.replace(cfg_instance)
         cfg_instance.update(cfg)
-        instance= backbones_class(name)(backbones_config(name)(**cfg))
+        for key, value in cfg.items():
+            if hasattr(cfg_instance, key):
+                setattr(cfg_instance, key, value)
+        instance= backbones_class(name)(cfg_instance)
         if 'url' in cfg:
             if cfg['url'] == 'timm':
                 try:
