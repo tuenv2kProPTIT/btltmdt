@@ -19,7 +19,11 @@ def get_pipeline(cfg):
     name = cfg['name'].lower()
     if name in _all_pipeline:
         dict_cls = _all_pipeline[name]
-        return dict_cls['instance'](dict_cls['config'](**cfg))
+        try:
+            return dict_cls['instance'](dict_cls['config'](**cfg))
+        except Exception as e:
+            print(e)
+            raise ValueError(cfg)
     else:
         print(f"pipeline with {name} didn't register anywhere")
         raise ValueError(cfg)
