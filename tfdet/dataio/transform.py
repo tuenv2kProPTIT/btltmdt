@@ -1,5 +1,5 @@
 from turtle import width
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Union
 import tensorflow as tf 
 from dataclasses import dataclass,asdict, field
 from tfdet.dataio.registry import register
@@ -25,8 +25,8 @@ class TransformConfig:
     p:float=1.
 
     # option map ds 
-    num_parallel_calls=None
-    deterministic=None
+    num_parallel_calls:Union[int,str]=None
+    deterministic:Union[int,str]=None
 class Transform(tf.keras.layers.Layer):
     cfg_class=TransformConfig
     def __init__(self, cfg:TransformConfig, *args, **kwargs):
@@ -59,7 +59,7 @@ class Transform(tf.keras.layers.Layer):
         )
 @dataclass
 class ComposeConfig(TransformConfig):
-    name = 'compose'
+    name:str = 'compose'
     last_modified : str = '27/02/2022'
     list_pipeline : Tuple = None 
 @register
@@ -83,7 +83,7 @@ class Compose(Transform):
         return data_dict
 @dataclass
 class OneOfConfig(TransformConfig):
-    name = 'OneOf'
+    name:str = 'OneOf'
     last_modified: str = '27/02/2022'
     list_pipeline : Tuple = None 
 
