@@ -27,6 +27,7 @@ class TransformConfig:
     # option map ds 
     num_parallel_calls:Union[int,str]=None
     deterministic:Union[int,str]=None
+
 class Transform(tf.keras.layers.Layer):
     cfg_class=TransformConfig
     def __init__(self, cfg:TransformConfig, *args, **kwargs):
@@ -57,6 +58,12 @@ class Transform(tf.keras.layers.Layer):
             lambda : self.apply({k:tf.identity(v) for k,v in data_dict.items()}, training=training),
             lambda : data_dict
         )
+    def get_config(self):
+        cfg = super().get_config()
+        cfg.update(
+            asdict(self.cfg)
+        )
+        return cfg
 @dataclass
 class ComposeConfig(TransformConfig):
     name:str = 'compose'
