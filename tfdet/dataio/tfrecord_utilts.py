@@ -84,7 +84,6 @@ def convert_dataset_to_tfrecord(
     datasets,
     num_shards=5,
     output_dir='./datasets',
-    total_log=200
 ):
     '''datasets = list[imge_dict]
     image_dict:
@@ -101,8 +100,6 @@ def convert_dataset_to_tfrecord(
     for idx,image_object in tqdm(enumerate(datasets), total=len(datasets)):
         example =serializable_feature(image_object)
         writers[idx % num_shards].write(example.SerializeToString())
-        if idx % total_log == 0:
-            print(f"working on {idx}")
     for writer in writers:
         writer.close()
 
