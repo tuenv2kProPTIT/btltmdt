@@ -94,22 +94,25 @@ class AnchorHead(tf.keras.Model):
                 padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
-    @tf.function(experimental_relax_shapes=True)
+
+
+
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
         loss_dict={'cls_loss':[],'bbox_loss':[]}
         for level in range(len(cls_score)):
-            total_loss_box=[]
-            total_loss_cls=[]
-            for batch in range(self.cfg.train_cfg['batch_size']):
-                loss_bbox, loss_cls = self.loss_fn_reduce_on_features(
-                    cls_score[level][batch,...], bbox_pred[level][batch,...],anchors[level], target_boxes[batch,...],target_labels[batch,...],mask_labels[batch,...]
-                )
-                total_loss_box.append(loss_bbox)
-                total_loss_cls.append(loss_cls)
-            loss_dict['cls_loss'].append(sum(total_loss_cls) )
-            loss_dict['bbox_loss'].append(sum(total_loss_box))
+            # total_loss_box=[]
+            # total_loss_cls=[]
+            loss_bbox, loss_cls = tf.vectorized_map(self.loss_fn_reduce_on_features, cls_score[level],bbox_pred[level],anchors[level], target_boxes,target_labels, mask_labels )
+            # for batch in range(self.cfg.train_cfg['batch_size']):
+            #     loss_bbox, loss_cls = self.loss_fn_reduce_on_features(
+            #         cls_score[level][batch,...], bbox_pred[level][batch,...],anchors[level], target_boxes[batch,...],target_labels[batch,...],mask_labels[batch,...]
+            #     )
+            #     total_loss_box.append(loss_bbox)
+            #     total_loss_cls.append(loss_cls)
+            loss_dict['cls_loss'].append(tf.math.reduce_sum(loss_bbox) )
+            loss_dict['bbox_loss'].append(tf.math.reduce_sum(loss_cls))
         loss_dict[f'cls_loss'] = sum(loss_dict['cls_loss']) / float(self.cfg.train_cfg['batch_size'])
         loss_dict[f'bbox_loss']= sum(loss_dict['bbox_loss']) / float(self.cfg.train_cfg['batch_size'])
         return loss_dict
@@ -211,3 +214,18 @@ class AnchorHead(tf.keras.Model):
             bbox_pred=layer(bbox_pred,training=training)
         
         return cls_score, bbox_pred
+    @tf.autograph.experimental.do_not_convert
+    def simple_infer(self, cls_scores, bbox_preds):
+        '''
+        cls_scores: [(Bs,h_level,w_level,num_classes * num_anchors),... ]
+        bbox_preds: [(Bs,h_level,w_level,4 * num_anchors,), ...]
+        '''
+
+        target_labels=tf.reshape(target_labels,[-1,1])
+        mask_labels = tf.reshape(mask_labels, [-1,])
+        shape_list_feature=shape_list(cls_score)
+        cls_score = tf.reshape(cls_score,[1* shape_list_feature[0] * shape_list_feature[1] * self.num_anchors,self.cfg.num_classes])
+        # bs,M,num_classes
+        bbox_pred = tf.reshape(bbox_pred, [1* shape_list_feature[1] * shape_list_feature[0] * self.num_anchors, 4 ])
+
+
