@@ -158,8 +158,6 @@ class AnchorHead(tf.keras.Model):
             index_matching
         ) 
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
-        total_hurt_score = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_classes_tagets),tf.float32))
-
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
             matched_reg_targets,
@@ -169,7 +167,7 @@ class AnchorHead(tf.keras.Model):
             cls_score,
             matched_gt_classes,
             mask_classes_tagets
-        ) / (total_hurt_score)
+        ) / (total_matched)
 
         return loss_bbox, loss_cls
 

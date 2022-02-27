@@ -22,7 +22,7 @@ Backbones:
 
 Current:
 
-1. [ x ] Support resnetv2 architecture
+1. [x] Support resnetv2 architecture
 2. [] Convert weights from timm or torchvision 
 
 **Neck: Design neck with input is feature pyramid of backbones**
@@ -33,7 +33,7 @@ Necks:
 
 Current:
 
-1. [ x ] Support FPN networks
+1. [x] Support FPN networks
 
 **Head: Design flexible for many architectures with loss_cls and loss_bbox is fixed**
 
@@ -109,7 +109,7 @@ train_ds = train_ds.map(lambda value:keep_only(value)).padded_batch(
 
 ```python3
 from tfdet.models.architectures.one_stage import OneStageModel,ConfigOneStage
-
+from tfdet.models.callbacks
 config_model = dict(
     backbone = dict(
         name='resnetv2',
@@ -122,6 +122,7 @@ config_model = dict(
 
     neck=dict(
         name='fpn',
+        start_level=1,
         num_nb_ins=4,
         num_nb_outs=5,
         filters=256,
@@ -165,9 +166,9 @@ config_model = dict(
 
 
 )
-
 model= OneStageModel(ConfigOneStage(**config))
 model.compile(optimizer=tf.optimizers.Adam(1e-4))
+callback=
 model.fit(train_ds.prefetch(4), epochs=4,....)
 
 ```

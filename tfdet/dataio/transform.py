@@ -1,11 +1,12 @@
 from turtle import width
-from typing import Dict
+from typing import Dict, Tuple
 import tensorflow as tf 
 from dataclasses import dataclass,asdict
 from tfdet.dataio.resizes import functions as F
 from tfdet.dataio.registry import register
 from tfdet.utils.serializable import keras_serializable
 import random
+from tfdet.dataio.registry import get_pipeline
 def to_tuple(x):
     if isinstance(x,list):
         assert len(x) == 2
@@ -18,15 +19,26 @@ def to_tuple(x):
 class TransformConfig:
     name='transform'
     last_modified: str='26/02/2022'
+
     dynamic:bool=False
+    
     always_apply:bool=False
     p:float=1.
 
+    # option map ds 
+    num_parallel_calls=None
+    deterministic=None
 class Transform(tf.keras.layers.Layer):
     cfg_class=TransformConfig
     def __init__(self, cfg:TransformConfig, *args, **kwargs):
         if cfg.dynamic:
             kwargs['dynamic']=True
+        if cfg.num_parallel_calls and cfg.num_parallel_calls == 'AUTO':
+            cfg.num_parallel_calls = tf.data.AUTOTUNE
+        if cfg.deterministic and cfg.deterministic == 'true':
+            cfg.deterministic = True 
+        if cfg.deterministic and cfg.deterministic == 'false':
+            cfg.deterministic = False
         super().__init__(*args, **kwargs)
         self.cfg=cfg 
     def apply_box(self, bboxes, dict_params=None ):
@@ -46,4 +58,53 @@ class Transform(tf.keras.layers.Layer):
             lambda : self.apply({k:tf.identity(v) for k,v in data_dict.items()}, training=training),
             lambda : data_dict
         )
-        
+@dataclass
+class ComposeConfig(TransformConfig):
+    name = 'compose'
+    last_modified : str = '27/02/2022'
+    list_pipeline : Tuple = None 
+@register
+class Compose(Transform):
+    cfg_class = ComposeConfig
+    def __init__(self,cfg:ComposeConfig,*args, **kwargs):
+        super().__init__(cfg, *args, **kwargs)
+    
+        list_pipe =self.cfg.list_pipeline
+        list_functions=[]
+        list_cfg_pipe = []
+        for pipe in list_pipe:
+            pipe_instance = get_pipeline(pipe)
+            list_functions.append(pipe_instance)
+            list_cfg_pipe.append(pipe_instance.get_config())
+        self.cfg.list_pipeline =list_cfg_pipe
+        self.list_functions = list_functions
+    def call(self, data_dict, training=None):
+        for pipe in self.list_functions:
+            data_dict = pipe(data_dict, training=training)
+        return data_dict
+@dataclass
+class OneOfConfig(TransformConfig):
+    name = 'OneOf'
+    last_modified: str = '27/02/2022'
+    list_pipeline : Tuple = None 
+
+@register
+class OneOf(Transform):
+    cfg_class = OneOfConfig
+    def __init__(self, cfg: TransformConfig, *args, **kwargs):
+       
+        list_pipe =self.cfg.list_pipeline
+        list_functions=[]
+        list_cfg_pipe = []
+        for pipe in list_pipe:
+            pipe_instance = get_pipeline(pipe)
+            list_functions.append(pipe_instance)
+            list_cfg_pipe.append(pipe_instance.get_config())
+        self.cfg.list_pipeline =list_cfg_pipe
+        self.list_functions = list_functions
+    
+    def call(self, data_dict, training=None):
+        idx = len(self.list_functions)
+        idx = tf.random.uniform([],0,idx,dtype=tf.int32)
+        return self.list_functions[idx](data_dict, training=None)
+

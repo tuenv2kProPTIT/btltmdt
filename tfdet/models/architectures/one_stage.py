@@ -63,9 +63,16 @@ class ConfigOneStage:
         )
     ))
 
+    class_cfg : Dict = field(default_factory= lambda : {
+        0:"aeroplane", 1:"bicycle",2:"bird",3:"boat",
+        4:"bottle", 5:"bus", 6:"car", 7:"cat",8:"chair",
+        9:"cow",10: "diningtable",11: "dog",12: "horse",
+        13:"motorbike", 14:"person",15: "pottedplant",
+        16:"sheep",16: "sofa",18: "train",19: "tvmonitor"
+    })
 
 
-@keras_serializable
+
 class OneStageModel(tf.keras.Model):
     cfg_class=ConfigOneStage
     def __init__(self, cfg:ConfigOneStage, *args, **kwargs) -> None:
@@ -79,7 +86,14 @@ class OneStageModel(tf.keras.Model):
         neck=self.neck(features, training=training)
         cls_score,bbox_score = self.head(neck, training=training)
         return cls_score, bbox_score
-
+    def get_config(self):
+        cfg = super().get_config()
+        cfg.update(
+            backbone=self.backbone.get_config(),
+            neck=self.neck.get_config(),
+            head=self.head.get_config()
+        )
+        return cfg
     @property
     def dummy_inputs(self) -> tf.Tensor:
         return self.backbone.dummy_inputs
