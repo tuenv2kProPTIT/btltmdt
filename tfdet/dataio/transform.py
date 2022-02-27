@@ -2,8 +2,6 @@ from turtle import width
 from typing import Dict, Tuple
 import tensorflow as tf 
 from dataclasses import dataclass,asdict, field
-from tfdet.dataio.resizes import functions as F
-from tfdet.dataio.crops import functions as FC
 from tfdet.dataio.registry import register
 from tfdet.utils.serializable import keras_serializable
 from tfdet.dataio.registry import get_pipeline
@@ -113,12 +111,29 @@ class OneOf(Transform):
 class KeepAndProcessBBoxConfig(TransformConfig):
     name = 'KeepAndProcessBBox'
     keep_dict :Tuple[str] = ('id', 'image', 'bboxes', 'labels', 'mask')
+def denormalize_bbox(bbox, rows, cols):
+    """Denormalize coordinates of a bounding box. Multiply x-coordinates by image width and y-coordinates
+    by image height. This is an inverse operation for :func:`~albumentations.augmentations.bbox.normalize_bbox`.
+    Args:
+        bbox (tuple): Normalized bounding box `(y_min,x_min, y_max, x_max)`.
+        rows (int): Image height.
+        cols (int): Image width.
+    Returns:
+        tuple: Denormalized bounding box `(x_min, y_min, x_max, y_max)`.
+    Raises:
+        ValueError: If rows or cols is less or equal zero
+    """
 
+    var_multi = tf.stack([rows, cols, rows, cols])
+    var_multi  = tf.cast(var_multi, tf.float32)
+
+    var_multi = tf.reshape(var_multi,[1,-1])
+    return bbox * var_multi
 @register
 class KeepAndProcessBBox(Transform):
     cfg_class=KeepAndProcessBBoxConfig
     def apply_box(self, bboxes, dict_params=None):
-        return FC.denormalize_bbox(bboxes,dict_params['rows'], dict_params['cols'])
+        return denormalize_bbox(bboxes,dict_params['rows'], dict_params['cols'])
     def call(self, data_dict, training=None):
         params = self.get_params()
         image = data_dict['image']
