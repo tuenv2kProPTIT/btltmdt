@@ -44,7 +44,7 @@ def register(cls):
     return cls
 def get_backbone(cfg):
     name=cfg.get("name","")
-    if 'name' in list_backbones():
+    if name in list_backbones():
         instance= backbones_class(name)(backbones_config(name)(**cfg))
         if 'url' in cfg:
             if cfg['url'] == 'timm':
