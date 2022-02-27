@@ -94,7 +94,7 @@ class AnchorHead(tf.keras.Model):
                 padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
-    @tf.function(experimental_relax_shapes=True, jit_compile=True)
+    @tf.function(experimental_relax_shapes=True)
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
@@ -145,6 +145,7 @@ class AnchorHead(tf.keras.Model):
             index_matching,
             name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
         )
+        matched_gt_boxes=tf.stop_gradient(matched_gt_boxes)
         # print("matched",matched_gt_boxes )
         matched_reg_targets =self.bbox_encode.encode(
             matched_gt_boxes,
@@ -158,6 +159,7 @@ class AnchorHead(tf.keras.Model):
             tf.constant([-1],tf.int32),
             index_matching
         ) 
+        matched_gt_classes=tf.stop_gradient(matched_gt_classes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
