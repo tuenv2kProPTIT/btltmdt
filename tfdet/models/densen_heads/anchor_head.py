@@ -124,7 +124,7 @@ class AnchorHead(tf.keras.Model):
         anchors = tf.concat(anchors,axis=0) # total_box,4
         cls_score = [tf.reshape(cls_score[i],[-1, shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, self.cfg.num_classes ]) for i in range(len(cls_score))]
         cls_score = tf.concat(cls_score,axis=1)
-        bbox_pred = [tf.reshape(bbox_pred[i], [-1,shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4 ]) for i in range(len(cls_score))]
+        bbox_pred = [tf.reshape(bbox_pred[i], [-1,shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4 ]) for i in range(len(bbox_pred))]
         bbox_pred = tf.concat(bbox_pred, axis=1)
         matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched = tf.vectorized_map(self.loss_fn3_support,(tf.expand_dims(anchors,0),target_boxes,target_labels,mask_labels))
 
