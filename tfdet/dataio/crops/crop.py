@@ -29,7 +29,6 @@ class CenterCrop(Transform):
             dict_params['rows'],
             dict_params['cols']
         )
-    @tf.function(experimental_relax_shapes=True)
     def apply(self, data_dict, training=None):
         params=self.get_params(training=training)
         shape = shape_list(data_dict['image'])[-3:-1]
@@ -65,7 +64,7 @@ class BaseRandomSizedCropConfig(TransformConfig):
 class _BaseRandomSizedCrop(Transform):
     # Base class for RandomSizedCrop and RandomResizedCrop
     cfg_class=BaseRandomSizedCropConfig
-    @tf.function(experimental_relax_shapes=True)
+  
     def apply(self, data_dict, training=None):
         img = data_dict['image']
         params = self.get_params(training=training)
@@ -83,7 +82,7 @@ class _BaseRandomSizedCrop(Transform):
                 bboxes=bboxes
             )
         return data_dict
-    
+
     def apply_box(self, bbox, dict_params):
         return F.bbox_random_crop(bbox, dict_params['crop_height'], dict_params['crop_width'], dict_params['h_start'], 
                                 dict_params['w_start'], dict_params['rows'], dict_params['cols'])
@@ -145,7 +144,7 @@ class RandomResizedCropConfig(BaseRandomSizedCropConfig):
 @keras_serializable 
 class RandomResizedCrop(_BaseRandomSizedCrop):
     cfg_class = RandomResizedCropConfig
-    @tf.function(experimental_relax_shapes=True)
+
     def apply(self, data_dict, training=None):
         img = data_dict['image']
         params = self.get_params(training=training)

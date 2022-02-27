@@ -50,7 +50,6 @@ class LongestMaxSize(Transform):
         return bboxes
     def apply_keypoint(self, keypoint, dict_params=None):
         return keypoint
-    @tf.function(experimental_relax_shapes=True)
     def apply(self, data_dict:Dict, training=None):
         params = self.get_params(training=training)
         image= F.longest_max_size(
@@ -89,7 +88,6 @@ class RandomScale (Transform):
         """function is wrong, for future work!
         """
         return keypoint
-    @tf.function(experimental_relax_shapes=True)
     def apply(self, data_dict:Dict, training=None):
         scale_param = self.get_params(training=training)
         image= F.scale(
@@ -111,7 +109,7 @@ class RandomScale (Transform):
 @keras_serializable 
 class Resize(Transform):
     cfg_class=ResizeConfig
-    @tf.function(experimental_relax_shapes=True)
+    
     def apply(self, data_dict:Dict, training=None):
         params=self.get_params()
         image= F.resize(data_dict['image'],height=params['height'],width=params['width'],interpolation=params['interpolation'])
@@ -129,7 +127,7 @@ class Resize(Transform):
 @keras_serializable 
 class SmallestMaxSize(Transform):
     cfg_class=SmallestMaxSizeConfig
-    @tf.function(experimental_relax_shapes=True)
+
     def apply(self, data_dict, training=None):
         params = self.get_params(training=training)
         image= F.smallest_max_size(
