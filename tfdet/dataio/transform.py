@@ -18,7 +18,7 @@ def to_tuple(x):
 class TransformConfig:
     name='transform'
     last_modified: str='26/02/2022'
-    dynamic:bool=True
+    dynamic:bool=False
     always_apply:bool=False
     p:float=1.
 

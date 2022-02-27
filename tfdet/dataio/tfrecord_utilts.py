@@ -98,7 +98,7 @@ def convert_dataset_to_tfrecord(
                            (i, num_shards))) for i in range(num_shards)
     ]
 
-    for idx,image_object in tqdm(enumerate(datasets)):
+    for idx,image_object in tqdm(enumerate(datasets), total=len(datasets)):
         example =serializable_feature(image_object)
         writers[idx % num_shards].write(example.SerializeToString())
         if idx % total_log == 0:

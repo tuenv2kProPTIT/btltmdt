@@ -16,7 +16,7 @@ class SmoothL1Loss:
     def __init__(self, cfg: SmoothL1LossConfig, *args, **kwargs) -> None:
         super().__init__()
         self.cfg = cfg 
-    
+    @tf.function(experimental_relax_shapes=True)
     def compute_loss(self, pred, target, weights):
         diff = tf.math.abs(pred - target)
         loss = tf.where(diff < self.cfg.beta, 0.5 * diff * diff / self.cfg.beta,

@@ -15,3 +15,11 @@ def register(cls):
             'instance':cls 
         }
     return cls
+def get_pipeline(cfg):
+    name = cfg['name']
+    if name in _all_pipeline:
+        dict_cls = _all_pipeline[name]
+        return dict_cls['instance'](dict_cls['config'](**cfg))
+    else:
+        print(f"pipeline with {name} didn't register anywhere")
+        raise ValueError(cfg)

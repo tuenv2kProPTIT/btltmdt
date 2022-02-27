@@ -109,8 +109,8 @@ class AnchorHead(tf.keras.Model):
                 )
                 total_loss_box.append(loss_bbox)
                 total_loss_cls.append(loss_cls)
-            loss_dict[f'cls loss at features {level}'] = sum(total_loss_cls) / float(self.cfg.train_cfg['batch_size'])
-            loss_dict[f'bbox loss at features {level}'] = sum(total_loss_box) / float(self.cfg.train_cfg['batch_size'])
+            loss_dict[f'cls_loss_{level}'] = sum(total_loss_cls) / float(self.cfg.train_cfg['batch_size'])
+            loss_dict[f'bbox_loss_{level}'] = sum(total_loss_box) / float(self.cfg.train_cfg['batch_size'])
         return loss_dict
 
     def loss_fn_reduce_on_features(self, cls_score, bbox_pred, anchor_level, target_boxes, target_labels, mask_labels):
