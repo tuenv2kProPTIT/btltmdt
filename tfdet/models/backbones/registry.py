@@ -48,7 +48,7 @@ def get_backbone(cfg):
     if name in list_backbones():
         cfg_instance = backbones_config(name)
         cfg_instance=dataclasses.replace(cfg_instance)
-        cfg_instance.update(cfg)
+        # cfg_instance.update(cfg)
         for key, value in cfg.items():
             if hasattr(cfg_instance, key):
                 setattr(cfg_instance, key, value)
