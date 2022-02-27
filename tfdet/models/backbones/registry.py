@@ -7,13 +7,14 @@ Copyright 2022 TueNguyen
 Modified by Tue Nguyen 24/02/2022
 """
 
+from ast import mod
 import fnmatch
 import re
 import sys
 from collections import defaultdict
 from copy import deepcopy
 from typing import List, Union
-
+from tfdet.utils.comvert import load_pytorch_weights_in_tf2_model
 __all__ = [
     "list_backbones",
     "is_backbones",
@@ -42,9 +43,38 @@ def register(cls):
     }
     return cls
 def get_backbone(cfg):
-    name=cfg.pop("name","").lower()
+    name=cfg.get("name","")
+    if 'name' in list_backbones():
+        instance= backbones_class(name)(backbones_config(name)(**cfg))
+        if 'url' in cfg:
+            if cfg['url'] == 'timm':
+                try:
+                    import timm
+                    model_torch = timm.create_model(name, pretrained=True)
+                    weight_torch=model_torch.state_dict() 
+                    load_pytorch_weights_in_tf2_model(instance, weight_torch)
+                except Exception as e:
+                    print(e) 
+            else:
+                # support pretrained weights tensorflow
+                instance.load_weights(cfg['url'])
+        return instance
+    name = name.lower()
     if name in _backbone_class_sum:
-        return _backbone_class_sum[name]['instance'](_backbone_class_sum[name]['config'](**cfg))
+        instance= _backbone_class_sum[name]['instance'](_backbone_class_sum[name]['config'](**cfg))
+        if 'url' in cfg:
+            if cfg['url'] == 'timm':
+                try:
+                    import timm
+                    model_torch = timm.create_model(name, pretrained=True)
+                    weight_torch=model_torch.state_dict() 
+                    load_pytorch_weights_in_tf2_model(instance, weight_torch)
+                except Exception as e:
+                    print(e) 
+            else:
+                # support pretrained weights tensorflow
+                instance.load_weights(cfg['url'])
+        return instance
     raise Exception(f"class with name = {name} didn't register at anywhere")
 def register_backbone(fn):
     # Get model class and model config

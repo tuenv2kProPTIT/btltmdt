@@ -87,8 +87,7 @@ class OneStageModel(tf.keras.Model):
         cls_score,bbox_score = self.head(neck, training=training)
         return cls_score, bbox_score
     def get_config(self):
-        cfg = super().get_config()
-        cfg.update(
+        cfg=dict(
             backbone=self.backbone.get_config(),
             neck=self.neck.get_config(),
             head=self.head.get_config()

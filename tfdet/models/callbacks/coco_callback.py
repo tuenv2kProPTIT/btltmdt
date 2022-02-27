@@ -3,7 +3,7 @@ import enum
 import tensorflow as tf 
 from dataclasses import dataclass,asdict,field
 from typing import Dict,Tuple
-from tfdet.dataio.pipiline import pipeline
+from tfdet.dataio.pipeline import pipeline
 import time
 from tqdm import tqdm
 import numpy as np

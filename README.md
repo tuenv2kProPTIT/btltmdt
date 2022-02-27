@@ -69,37 +69,37 @@ Note: In the future model can predict from embedded image numpy file for testset
 
 ```python3
 from tfdet.dataio.pipeline import pipeline
-
 steps_training_ds = [
     dict(
-        name='InputReadRecordFiles',
-        pattern_file=f'{directory}/*.tfrecord'
+        name='InputReadRecordFiles',#inputreadrecordfiles
+        pattern_file=f'/content/train_set/*.tfrecord'
     ),
     dict(
-        name='RandomResized',
+        name='RandomResizedCrop',
         height=512,
         width=512,
         scale=(0.8,1.0),
-        ratio= (0.75, 1.3333333333333333)
+        ratio= (0.75, 1.3333333333333333),
+         num_parallel_calls='AUTO',
+         deterministic=False
     ),
     dict(
         name='Normalize',
         mean= (0.485, 0.456, 0.406),
-        std  = (0.229, 0.224, 0.225)
-        p=1.
+        std  = (0.229, 0.224, 0.225),
+        p=1.,
+         num_parallel_calls='AUTO',
+         deterministic=False
+    ),
+    dict(
+        name='KeepAndProcessBBox',
+        keep_dict=['image','bboxes','labels','mask']
     )
 ]
 train_ds = pipeline(
     steps_training_ds
 )
-def keep_only(example):
-  return {
-      'image':example['image'],
-      'bboxes': example['bboxes'] * 512.,
-      'labels':example['labels'],
-      'mask':example['mask']
-  }
-train_ds = train_ds.map(lambda value:keep_only(value)).padded_batch(
+train_ds = train_ds.padded_batch(
     4,drop_remainder=True
 )
 # We reduce memory before batching by select some information usefull. And keep in mind bboxes don't have format [0-1] but format [0,w-1,0,h-1]

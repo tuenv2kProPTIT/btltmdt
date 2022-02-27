@@ -40,7 +40,7 @@ def register(cls):
     }
     return cls
 def get_densen_head(cfg):
-    name=cfg.pop("name","").lower()
+    name=cfg.get("name","").lower()
     if name in _densen_head:
         return _densen_head[name]['instance'](_densen_head[name]['config'](**cfg))
     raise Exception(f"class with name = {name} didn't register at anywhere")

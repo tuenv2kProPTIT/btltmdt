@@ -99,7 +99,7 @@ class AnchorHead(tf.keras.Model):
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
-        loss_dict={}
+        loss_dict={'cls_loss':[],'bbox_loss':[]}
         for level in range(len(cls_score)):
             total_loss_box=[]
             total_loss_cls=[]
@@ -109,8 +109,10 @@ class AnchorHead(tf.keras.Model):
                 )
                 total_loss_box.append(loss_bbox)
                 total_loss_cls.append(loss_cls)
-            loss_dict[f'cls_loss_{level}'] = sum(total_loss_cls) / float(self.cfg.train_cfg['batch_size'])
-            loss_dict[f'bbox_loss_{level}'] = sum(total_loss_box) / float(self.cfg.train_cfg['batch_size'])
+            loss_dict['cls_loss'].append(sum(total_loss_cls) )
+            loss_dict['bbox_loss'].append(sum(total_loss_box))
+        loss_dict[f'cls_loss'] = sum(loss_dict['cls_loss']) / float(self.cfg.train_cfg['batch_size'])
+        loss_dict[f'bbox_loss']= sum(loss_dict['bbox_loss']) / float(self.cfg.train_cfg['batch_size'])
         return loss_dict
 
     def loss_fn_reduce_on_features(self, cls_score, bbox_pred, anchor_level, target_boxes, target_labels, mask_labels):
