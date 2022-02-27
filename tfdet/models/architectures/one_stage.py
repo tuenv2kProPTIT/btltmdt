@@ -1,5 +1,5 @@
 from dataclasses import dataclass, field
-
+import dataclasses
 from typing import Dict
 import tensorflow as tf 
 from tfdet.utils.serializable import keras_serializable
@@ -77,7 +77,7 @@ class OneStageModel(tf.keras.Model):
     cfg_class=ConfigOneStage
     def __init__(self, cfg:ConfigOneStage, *args, **kwargs) -> None:
         super().__init__()
-        self.cfg= cfg 
+        self.cfg= dataclasses.replace(cfg) 
         self.backbone = get_backbone(self.cfg.backbone)
         self.neck = get_neck(self.cfg.neck)
         self.head = get_densen_head(self.cfg.head)
