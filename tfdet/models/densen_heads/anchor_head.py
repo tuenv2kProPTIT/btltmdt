@@ -151,7 +151,7 @@ class AnchorHead(tf.keras.Model):
             mask_classes_tagets
         ) / (total_matched)
 
-        return  {"cls_loss":loss_bbox,"bbox_loss":loss_bbox}
+        return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
 
     def loss_fn3_support(self, args):
         anchor_level, target_boxes, target_labels, mask_labels=args
