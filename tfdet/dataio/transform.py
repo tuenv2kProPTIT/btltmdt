@@ -1,12 +1,13 @@
 from turtle import width
 from typing import Dict, Tuple
 import tensorflow as tf 
-from dataclasses import dataclass,asdict
+from dataclasses import dataclass,asdict, field
 from tfdet.dataio.resizes import functions as F
+from tfdet.dataio.crops import functions as FC
 from tfdet.dataio.registry import register
 from tfdet.utils.serializable import keras_serializable
-import random
 from tfdet.dataio.registry import get_pipeline
+from tfdet.utils.shape_utils import shape_list
 def to_tuple(x):
     if isinstance(x,list):
         assert len(x) == 2
@@ -108,3 +109,26 @@ class OneOf(Transform):
         idx = tf.random.uniform([],0,idx,dtype=tf.int32)
         return self.list_functions[idx](data_dict, training=None)
 
+@dataclass
+class KeepAndProcessBBoxConfig(TransformConfig):
+    name = 'KeepAndProcessBBox'
+    keep_dict :Tuple[str] = ('id', 'image', 'bboxes', 'labels', 'mask')
+
+@register
+class KeepAndProcessBBox(Transform):
+    cfg_class=KeepAndProcessBBoxConfig
+    def apply_box(self, bboxes, dict_params=None):
+        return FC.denormalize_bbox(bboxes,dict_params['rows'], dict_params['cols'])
+    def call(self, data_dict, training=None):
+        params = self.get_params()
+        image = data_dict['image']
+        h,w = shape_list(image)[-3:-1]
+        params['rows']  =  h
+        params['cols']  = w
+        if 'bboxes' in data_dict:
+            bboxes = self.apply_box(data_dict['bboxes'], params)
+            data_dict['bboxes'] = bboxes
+        keep_dict = params['keep_dict']
+        if keep_dict == 'all':
+            return data_dict
+        return {k:data_dict[k] for k in keep_dict}
