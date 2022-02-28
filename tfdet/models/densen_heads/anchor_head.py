@@ -213,18 +213,18 @@ class AnchorHead(tf.keras.Model):
             bbox_pred=layer(bbox_pred,training=training)
         
         return cls_score, bbox_pred
-    @tf.autograph.experimental.do_not_convert
+  
     def simple_infer(self, cls_scores, bbox_preds):
         '''
         cls_scores: [(Bs,h_level,w_level,num_classes * num_anchors),... ]
         bbox_preds: [(Bs,h_level,w_level,4 * num_anchors,), ...]
         '''
-
-        target_labels=tf.reshape(target_labels,[-1,1])
-        mask_labels = tf.reshape(mask_labels, [-1,])
-        shape_list_feature=shape_list(cls_score)
-        cls_score = tf.reshape(cls_score,[1* shape_list_feature[0] * shape_list_feature[1] * self.num_anchors,self.cfg.num_classes])
-        # bs,M,num_classes
-        bbox_pred = tf.reshape(bbox_pred, [1* shape_list_feature[1] * shape_list_feature[0] * self.num_anchors, 4 ])
+        shape_list_feature = [shape_list(i) for i in cls_scores]
+        anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
+        cls_scores = [tf.reshape(cls_scores[i], [-1, shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors,self.cfg.num_classes ]) for i in range(len(cls_scores))]
+        bbox_preds = [tf.reshape(bbox_preds[i], [-1, shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4]) for i in range(len(shape_list_feature))]
+        cls_scores = tf.concat(cls_scores,axis=1)
+        bbox_preds = tf.concat(bbox_preds, axis=1)
+        bbox_preds = self.bbox_encode.decode_batch(bbox_preds, anchors)
 
         
