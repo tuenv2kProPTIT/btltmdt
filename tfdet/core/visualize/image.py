@@ -242,8 +242,6 @@ def make_target(bboxes, labels, mask):
   bboxes=bboxes.numpy()
   labels=labels.numpy()
   masks  = mask.numpy()
-  if num_valids is not None:
-    num_valids = num_valids.numpy().reshape([-1,])
   bs = labels.shape[0]
   targets=[]
   for i in range(bs):

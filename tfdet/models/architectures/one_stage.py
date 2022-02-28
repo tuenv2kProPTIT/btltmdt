@@ -6,6 +6,7 @@ from tfdet.utils.serializable import keras_serializable
 from tfdet.models.backbones.registry import get_backbone
 from tfdet.models.densen_heads.registry import get_densen_head
 from tfdet.models.necks.registry import get_neck
+import re
 @dataclass
 class ConfigOneStage:
     name='OneStage'
@@ -59,7 +60,8 @@ class ConfigOneStage:
         loss_bbox={'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0},
 
         train_cfg=dict(
-            batch_size=4
+            batch_size=4,
+            weight_decay=4e-5
         )
     ))
 
@@ -96,7 +98,12 @@ class OneStageModel(tf.keras.Model):
     @property
     def dummy_inputs(self) -> tf.Tensor:
         return self.backbone.dummy_inputs
-
+    def _reg_l2_loss(self, weight_decay, regex=r'.*(kernel|weight):0$'):
+        """Return regularization l2 loss loss."""
+        var_match = re.compile(regex)
+        return weight_decay * tf.add_n([
+            tf.nn.l2_loss(v) for v in self.trainable_variables if var_match.match(v.name)
+        ])
     def train_step(self, data):
         image  =data['image']
         bboxes = data['bboxes']
@@ -105,7 +112,7 @@ class OneStageModel(tf.keras.Model):
         with tf.GradientTape() as tape:
             cls_score, bbox_score = self(image, training=True)
             loss_dict=self.head.loss_fn( cls_score, bbox_score, bboxes, labels, mask_label)
-            loss_dict['loss_additional'] = sum(self.losses)
+            loss_dict['loss_additional'] = sum(self.losses) + self._reg_l2_loss(self.cfg.train_cfg.get('weight_decay',4e-5))
             loss = sum(loss_dict.values())
             trainable_variables = self.trainable_variables
         gradients = tape.gradient(loss, trainable_variables)
