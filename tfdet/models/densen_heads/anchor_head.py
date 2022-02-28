@@ -14,6 +14,7 @@ from tfdet.models.layers.act_norm_conv import Conv2DNorm
 from tfdet.utils.shape_utils import shape_list
 from tfdet.utils.trick_tensor import gather_based_on_match
 from tfdet.models.losses.build_loss import build_loss
+from tfdet.models.postprocess.nms import postprocess_global
 @dataclass
 class AnchorHeadConfig(HeadConfig):
     name='AnchorHead'
@@ -31,7 +32,7 @@ class AnchorHeadConfig(HeadConfig):
     loss_cls : Dict = field(default_factory=lambda: {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.0})
     loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0})
 
-    test_cfg : Dict = field(default_factory=lambda:{''})
+    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing', 'nms_cfg':{'top_k':True,'max_nms_inputs':0,'method':'gaussian','max_output_size':100,'iou_thresh':0.5,'score_thresh':0.01}}})
     train_cfg :  Dict =field(default_factory=lambda: {
        
         'batch_size':16,
@@ -159,7 +160,8 @@ class AnchorHead(tf.keras.Model):
             target_labels,
             tf.constant([-1],tf.int32),
             tf.constant([-1],tf.int32),
-            index_matching
+            index_matching,
+            name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
         ) 
         matched_gt_classes=tf.stop_gradient(matched_gt_classes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
@@ -227,4 +229,12 @@ class AnchorHead(tf.keras.Model):
         bbox_preds = tf.concat(bbox_preds, axis=1)
         bbox_preds = self.bbox_encode.decode_batch(bbox_preds, anchors)
 
+        pp = self.cfg.test_cfg.get("post_processing")
+        params_mns=pp.get("nms_cfg",None)
+        name = pp.get("name",None)
+        if name is None:
+            return {'bboxes':bbox_preds,'labels':cls_scores}
+        if name and name == 'global_postprocessing':
+            nms_boxes, nms_scores, nms_classes, nms_valid_len=postprocess_global(params_mns, cls_scores, bbox_preds)
+        
         
