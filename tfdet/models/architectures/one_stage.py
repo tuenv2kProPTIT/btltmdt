@@ -61,10 +61,10 @@ class ConfigOneStage:
 
         train_cfg=dict(
             batch_size=4,
-            weight_decay=4e-5
+           
         )
     ))
-
+    weight_decay:float=4e-5
     class_cfg : Dict = field(default_factory= lambda : {
         0:"aeroplane", 1:"bicycle",2:"bird",3:"boat",
         4:"bottle", 5:"bus", 6:"car", 7:"cat",8:"chair",
@@ -112,7 +112,7 @@ class OneStageModel(tf.keras.Model):
         with tf.GradientTape() as tape:
             cls_score, bbox_score = self(image, training=True)
             loss_dict=self.head.loss_fn( cls_score, bbox_score, bboxes, labels, mask_label)
-            loss_dict['loss_additional'] = sum(self.losses) + self._reg_l2_loss(self.cfg.train_cfg.get('weight_decay',4e-5))
+            loss_dict['loss_additional'] = sum(self.losses) + self._reg_l2_loss(self.cfg.weight_decay)
             loss = sum(loss_dict.values())
             trainable_variables = self.trainable_variables
         gradients = tape.gradient(loss, trainable_variables)
