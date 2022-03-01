@@ -29,10 +29,10 @@ class AnchorHeadConfig(HeadConfig):
     norm_cfg: Union[Dict, str] = field(default_factory=lambda:'')
     num_classes: int = 80
 
-    loss_cls : Dict = field(default_factory=lambda: {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.0})
-    loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':1.0})
+    loss_cls : Dict = field(default_factory=lambda: {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.})
+    loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':10.})
 
-    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing', 'nms_cfg':{'top_k':True,'max_nms_inputs':0,'method':'gaussian','max_output_size':100,'iou_thresh':0.5,'score_thresh':0.01}}})
+    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing','top_k':True, 'nms_configs':{'max_nms_inputs':200,'method':'gaussian','max_output_size':100,'iou_thresh':0.5,'score_thresh':0.01,'sigma':0.5}}})
     train_cfg :  Dict =field(default_factory=lambda: {
        
         'batch_size':16,
@@ -215,7 +215,7 @@ class AnchorHead(tf.keras.Model):
             bbox_pred=layer(bbox_pred,training=training)
         
         return cls_score, bbox_pred
-  
+    @tf.autograph.experimental.do_not_convert
     def simple_infer(self, cls_scores, bbox_preds):
         '''
         cls_scores: [(Bs,h_level,w_level,num_classes * num_anchors),... ]
@@ -227,14 +227,32 @@ class AnchorHead(tf.keras.Model):
         bbox_preds = [tf.reshape(bbox_preds[i], [-1, shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4]) for i in range(len(shape_list_feature))]
         cls_scores = tf.concat(cls_scores,axis=1)
         bbox_preds = tf.concat(bbox_preds, axis=1)
+        anchors = [tf.reshape(i,[-1,4]) for i in anchors]
+        anchors  = tf.concat(anchors,axis=0) 
         bbox_preds = self.bbox_encode.decode_batch(bbox_preds, anchors)
-
         pp = self.cfg.test_cfg.get("post_processing")
-        params_mns=pp.get("nms_cfg",None)
+        pp['num_classes'] = self.cfg.num_classes
         name = pp.get("name",None)
         if name is None:
             return {'bboxes':bbox_preds,'labels':cls_scores}
         if name and name == 'global_postprocessing':
-            nms_boxes, nms_scores, nms_classes, nms_valid_len=postprocess_global(params_mns, cls_scores, bbox_preds)
-        
-        
+            nms_boxes, nms_scores, nms_classes, nms_valid_len=postprocess_global(pp, cls_scores, bbox_preds)
+            return refine_class(nms_boxes, nms_scores, nms_classes, nms_valid_len)
+def refine_class(nms_boxes, nms_scores, nms_classes, nms_valid_len):
+  bs=nms_boxes.shape[0]
+  targets=[]
+  nms_boxes=nms_boxes.numpy()
+  nms_scores=nms_scores.numpy()
+  nms_classes=nms_classes.numpy()
+  nms_valid_len=nms_valid_len.numpy()
+  for i in range(bs):
+    total=nms_valid_len[i]
+    box=nms_boxes[i].reshape([-1,4])[:total,...]
+    nms_score=nms_scores[i].reshape([-1,1])[:total,...]
+    nms_classe=nms_classes[i].reshape([-1,1])[:total,...]
+    index = np.array([i,] * int(total)).reshape([-1,1])
+    # print(index.shape,nms_classe.shape,nms_score.shape,box.shape)
+    target=np.concatenate([index, nms_classe, box,nms_score],axis=1)
+    targets.append(target)
+  targets = np.concatenate(targets)
+  return targets

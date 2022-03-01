@@ -8,7 +8,7 @@ class FocalLossConfig:
     gamma:float=2.0
     alpha: float=0.25
     use_sigmoid:bool  = True 
-    loss_weight:float = 1.0
+    loss_weight:float = 0.1
     name:str='FocalLoss'
     last_modified:str='25/02/2022'
 
@@ -20,7 +20,7 @@ def focal_loss_funtion(pred, target, alpha = 0.25, gamma = 2., label_smoothing =
     modulating_factor =  tf.pow(p_t,gamma)
     ce = tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=pred)
     loss_without_weights= alpha_factor * modulating_factor * ce
-    return tf.math.reduce_sum(loss_without_weights,axis=-1)
+    return tf.math.reduce_mean(loss_without_weights,axis=-1)
 @register
 class FocalLoss:
     cfg_class = FocalLossConfig

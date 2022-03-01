@@ -118,7 +118,7 @@ class OneStageModel(tf.keras.Model):
         gradients = tape.gradient(loss, trainable_variables)
         self.optimizer.apply_gradients(zip(gradients, trainable_variables))
         return loss_dict
-
+    @tf.function(experimental_relax_shapes=True)
     def test_step(self, data):
         image  =data['image']
         cls_score, bbox_score = self(image, training=True)

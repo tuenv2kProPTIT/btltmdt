@@ -47,7 +47,7 @@ def nms(params, boxes: T, scores: T, classes: T,
     iou_thresh = nms_configs['iou_thresh'] or 0.5
     score_thresh = nms_configs['score_thresh'] or float('-inf')
   elif method == 'gaussian':
-    sigma = nms_configs['sigma'] or 0.5
+    sigma = nms_configs.get('sigma', 0.5)
     iou_thresh = 1.0
     score_thresh = nms_configs['score_thresh'] or 0.001
   else:
@@ -113,7 +113,7 @@ def pre_nms(params,  cls_outputs, box_outputs):
             params, cls_outputs, box_outputs)
     else:
         classes=None
-    return box_outputs, cls_outputs,cls_outputs, classes
+    return box_outputs, cls_outputs, classes
 def postprocess_global(params, cls_outputs, box_outputs):
     '''
     faster nms global
