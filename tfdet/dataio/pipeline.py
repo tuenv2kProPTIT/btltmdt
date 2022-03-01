@@ -1,7 +1,7 @@
 
 import imp
 from tfdet.dataio.registry import get_pipeline
-from tfdet.dataio.transform import Compose
+
 
 
 def pipeline(cfgs):

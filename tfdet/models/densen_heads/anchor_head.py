@@ -138,10 +138,13 @@ class AnchorHead(tf.keras.Model):
     @tf.autograph.experimental.do_not_convert
     def loss_fn3_support(self, args):
         anchor_level, target_boxes, target_labels, mask_labels=args
+
         target_labels=tf.reshape(target_labels,[-1,1])
         mask_labels = tf.reshape(mask_labels, [-1,])
-        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_tagets=mask_labels)
-
+        mask_labels = tf.cast(mask_labels,tf.bool)
+        target_labels = tf.boolean_mask(target_labels, mask_labels)
+        target_boxes = tf.boolean_mask(target_boxes, mask_labels)
+        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes)
         index_matching = self.sampler.sampler(index_matching)
         matched_gt_boxes = gather_based_on_match(
             target_boxes,

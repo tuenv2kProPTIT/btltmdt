@@ -16,7 +16,7 @@ class MaxIOUAssigner:
         super().__init__(*args,**kwargs)
         self.cfg = cfg 
 
-    def match(self, anchors, targets, ignore_tagets):
+    def match(self, anchors, targets):
         ''' anchors: N,4
             targets: M,4
             ignore_targets: M :
@@ -30,9 +30,9 @@ class MaxIOUAssigner:
             # print("iou",match)
         else:
             raise ValueError(self.cfg.iou_calculator)
-        return self._match(match, ignore_tagets)
+        return self._match(match)
         
-    def _match(self, similarity_matrix, valid_rows):
+    def _match(self, similarity_matrix,):
         """Tries to match each column of the similarity matrix to a row.
         Args:
         similarity_matrix: tensor of shape [N, M] representing any similarity
@@ -94,9 +94,9 @@ class MaxIOUAssigner:
                 final_matches = tf.where(force_match_column_mask,
                                         force_match_row_ids, matches)
 
-                return final_matches
+                return final_matches # shape = M : -2,-1,0
             else:
-
+                # valid_mask =  tf.concat([tf.convert_to_tensor([0,1]),valid_rows],axis=0)
                 return matches
 
         if similarity_matrix.shape.is_fully_defined():
