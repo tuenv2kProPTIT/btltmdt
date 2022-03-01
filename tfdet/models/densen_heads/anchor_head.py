@@ -109,14 +109,31 @@ class AnchorHead(tf.keras.Model):
         cls_score = tf.concat(cls_score,axis=1)
         bbox_pred = [tf.reshape(bbox_pred[i], [-1,shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4 ]) for i in range(len(bbox_pred))]
         bbox_pred = tf.concat(bbox_pred, axis=1)
-        def map_fn(params):
-            return self.loss_fn3_support(params, anchors)
-        matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched = tf.map_fn(map_fn,(target_boxes,target_labels,mask_labels))
+        # def map_fn(params):
+            # return self.loss_fn3_support(params, anchors)
+        # matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched = tf.vectorize_map(map_fn,(target_boxes,target_labels,mask_labels))
+        matched_reg_targets=[]
+        mask_reg_targets=[]
+        matched_gt_classes=[]
+        mask_classes_tagets=[]
+        total_matched=[]
+        for batch in range(self.cfg.train_cfg['batch_size']):
+            a,b,c,d,e = self.loss_fn3_support((target_boxes[batch],target_labels[batch],mask_labels[batch]),anchors)
+            matched_reg_targets.append(a)
+            mask_reg_targets.append(b)
+            matched_gt_classes.append(c)
+            mask_classes_tagets.append(d)
+            total_matched.append(e)
+        matched_reg_targets = tf.concat(matched_reg_targets,0)
+        mask_reg_targets=tf.concat(mask_reg_targets,0)
+        matched_gt_classes=tf.concat(matched_gt_classes,0)
+        mask_classes_tagets=tf.concat(mask_classes_tagets,0)
+        total_matched=tf.concat(total_matched,0)
 
         cls_score = tf.reshape(cls_score,[-1, self.cfg.num_classes])
         bbox_pred = tf.reshape(bbox_pred, [-1, 4])
         matched_reg_targets=tf.stop_gradient(matched_reg_targets)
-        print(matched_reg_targets.shape)
+        
         matched_reg_targets=tf.reshape(matched_reg_targets,[-1,4]) 
         mask_reg_targets = tf.stop_gradient(mask_reg_targets)
         mask_reg_targets=tf.reshape(mask_reg_targets, [-1,4])
