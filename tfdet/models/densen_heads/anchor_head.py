@@ -152,13 +152,13 @@ class AnchorHead(tf.keras.Model):
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes)
 
         index_matching = self.sampler.sampler(index_matching)
-        tf.print(index_matching)
+        print(index_matching)
         matched_gt_boxes = gather_based_on_match(
             target_boxes,
             tf.zeros(4),
             tf.zeros(4),
             index_matching,
-            name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
+            
         )
         matched_reg_targets =self.bbox_encode.encode(
             matched_gt_boxes,
@@ -171,6 +171,7 @@ class AnchorHead(tf.keras.Model):
             tf.constant([-1],tf.int32),
             index_matching
         ) 
+        print(matched_gt_classes,matched_gt_boxes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
         total_matched = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
         
