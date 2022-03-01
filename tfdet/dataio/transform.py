@@ -4,7 +4,14 @@ import tensorflow as tf
 from dataclasses import dataclass,asdict, field
 from tfdet.dataio.registry import register
 
-
+def to_tuple(x):
+    if isinstance(x,list):
+        assert len(x) == 2
+        return tuple(x)
+    if isinstance(x,tuple):
+        assert len(x)==2
+        return x 
+    return (x,x)
 @dataclass
 class TransformConfig:
     name='transform'
