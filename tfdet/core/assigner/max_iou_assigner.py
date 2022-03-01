@@ -82,10 +82,8 @@ class MaxIOUAssigner:
                                            output_type=tf.int32)
           
                 # tf.print(temp,one_h.shape, temp * one_h)
-                force_match_column_indicators = (
-                    tf.one_hot(
-                        force_match_column_ids, depth=similarity_matrix_shape[1]) *
-                    tf.cast(tf.expand_dims(valid_rows, axis=-1), dtype=tf.float32))
+                force_match_column_indicators = tf.one_hot(
+                        force_match_column_ids, depth=similarity_matrix_shape[1])
                 force_match_row_ids = tf.argmax(force_match_column_indicators, 0,
                                                 output_type=tf.int32)
                 # tf.print(force_match_row_ids, tf.where(force_match_row_ids>0))
