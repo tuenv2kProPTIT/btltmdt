@@ -100,9 +100,73 @@ class AnchorHead(tf.keras.Model):
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
 
-
-
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
+        shape_list_feature = [shape_list(i) for i in cls_score]
+        anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature])
+        anchors = [tf.reshape(anchor,[-1,4]) for anchor in anchors]
+        anchors = tf.concat(anchors,axis=0) # total_box,4
+        cls_score = [tf.reshape(cls_score[i],[-1, shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, self.cfg.num_classes ]) for i in range(len(cls_score))]
+        cls_score = tf.concat(cls_score,axis=1)
+        bbox_pred = [tf.reshape(bbox_pred[i], [-1,shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4 ]) for i in range(len(bbox_pred))]
+        bbox_pred = tf.concat(bbox_pred, axis=1)
+        matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched = tf.vectorized_map(self.loss_fn3_support,(tf.expand_dims(anchors,0),target_boxes,target_labels,mask_labels))
+
+        cls_score = tf.reshape(cls_score,[-1, self.cfg.num_classes])
+        bbox_pred = tf.reshape(bbox_pred, [-1, 4])
+        matched_reg_targets=tf.stop_gradient(matched_reg_targets)
+        matched_reg_targets=tf.reshape(matched_reg_targets,[-1,4]) 
+        mask_reg_targets = tf.stop_gradient(mask_reg_targets)
+        mask_reg_targets=tf.reshape(mask_reg_targets, [-1,4])
+        matched_gt_classes = tf.stop_gradient(matched_gt_classes)
+        matched_gt_classes=tf.reshape(matched_gt_classes,[-1,])
+        mask_classes_tagets=tf.stop_gradient(mask_classes_tagets)
+        mask_classes_tagets=tf.reshape(mask_classes_tagets,[-1,])
+        total_matched = tf.stop_gradient(total_matched)
+        total_matched=tf.math.reduce_sum(total_matched)
+        loss_bbox = self.cal_loss_bboxes.compute_loss(
+            bbox_pred,
+            matched_reg_targets,
+            mask_reg_targets
+        ) / (total_matched  )
+        loss_cls = self.cal_loss_classes.compute_loss(
+            cls_score,
+            matched_gt_classes,
+            mask_classes_tagets
+        ) / (total_matched)
+
+        return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
+
+    def loss_fn3_support(self, args):
+        anchor_level, target_boxes, target_labels, mask_labels=args
+        target_labels=tf.reshape(target_labels,[-1,1])
+        mask_labels = tf.reshape(mask_labels, [-1,])
+        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_tagets=mask_labels)
+
+        index_matching = self.sampler.sampler(index_matching)
+        matched_gt_boxes = gather_based_on_match(
+            target_boxes,
+            tf.zeros(4),
+            tf.zeros(4),
+            index_matching,
+            name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
+        )
+        matched_reg_targets =self.bbox_encode.encode(
+            matched_gt_boxes,
+            anchor_level
+        )
+        mask_reg_targets = tf.where(index_matching >=0, 1, 0)
+        matched_gt_classes = gather_based_on_match(
+            target_labels,
+            tf.constant([-1],tf.int32),
+            tf.constant([-1],tf.int32),
+            index_matching
+        ) 
+        mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
+        total_matched = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
+
+        return matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched
+
+    def loss_fn_backup(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
         loss_dict={'cls_loss':[],'bbox_loss':[]}
