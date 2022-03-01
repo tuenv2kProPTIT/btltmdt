@@ -227,6 +227,7 @@ class AnchorHead(tf.keras.Model):
         bbox_preds = [tf.reshape(bbox_preds[i], [-1, shape_list_feature[i][1] * shape_list_feature[i][2] * self.num_anchors, 4]) for i in range(len(shape_list_feature))]
         cls_scores = tf.concat(cls_scores,axis=1)
         bbox_preds = tf.concat(bbox_preds, axis=1)
+        cls_scores=tf.sigmoid(cls_scores)
         anchors = [tf.reshape(i,[-1,4]) for i in anchors]
         anchors  = tf.concat(anchors,axis=0) 
         bbox_preds = self.bbox_encode.decode_batch(bbox_preds, anchors)
