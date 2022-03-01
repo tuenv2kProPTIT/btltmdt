@@ -272,7 +272,7 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         shift_xx, shift_yy = self._meshgrid(shift_x, shift_y)
         shift_xx = tf2.reshape(shift_xx,(-1,))
         shift_yy= tf2.reshape(shift_yy,(-1,))
-        shifts = tf2.stack([shift_xx, shift_yy, shift_xx, shift_yy], axis=-1)
+        shifts = tf2.stack([shift_yy,shift_xx, shift_yy,shift_xx], axis=-1)
         # first feat_w elements correspond to the first row of shifts
         # add A anchors (1, A, 4) to K shifts (K, 1, 4) to get
         # shifted anchors (K, A, 4), reshape to (K*A, 4)
