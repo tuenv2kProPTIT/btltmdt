@@ -111,7 +111,7 @@ class AnchorHead(tf.keras.Model):
         bbox_pred = tf.concat(bbox_pred, axis=1)
         def map_fn(params):
             return self.loss_fn3_support(params, anchors)
-        matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched = tf.vectorized_map(map_fn,(target_boxes,target_labels,mask_labels))
+        matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched = tf.map_fn(map_fn,(target_boxes,target_labels,mask_labels))
 
         cls_score = tf.reshape(cls_score,[-1, self.cfg.num_classes])
         bbox_pred = tf.reshape(bbox_pred, [-1, 4])
@@ -141,16 +141,16 @@ class AnchorHead(tf.keras.Model):
     @tf.autograph.experimental.do_not_convert
     def loss_fn3_support(self, args,anchor_level):
         target_boxes, target_labels, mask_labels=args
-        mask_labels = tf.reduce_sum(mask_labels)
+        # mask_labels = tf.reduce_sum(mask_labels)
 
-        # mask_labels = tf.reshape(mask_labels, [-1,])
-        # mask_labels = tf.cast(mask_labels,tf.bool)
+        mask_labels = tf.reshape(mask_labels, [-1,])
+        mask_labels = tf.cast(mask_labels,tf.bool)
 
         target_labels=tf.reshape(target_labels,[-1,1])
-        target_labels = tf.slice(target_labels,[0,0],[mask_labels,1])
-        # target_labels = tf.boolean_mask(target_labels, mask_labels)
-        # target_boxes = tf.boolean_mask(target_boxes, mask_labels)
-        target_boxes = tf.slice(target_boxes,[0,0],[mask_labels,4])
+        # target_labels = tf.slice(target_labels,[0,0],[mask_labels,1])
+        target_labels = tf.boolean_mask(target_labels, mask_labels)
+        target_boxes = tf.boolean_mask(target_boxes, mask_labels)
+        # target_boxes = tf.slice(target_boxes,[0,0],[mask_labels,4])
 
 
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes)
