@@ -67,6 +67,7 @@ class AnchorHead(tf.keras.Model):
                     3,
                     strides=1,
                     padding='SAME',
+                    kernel_initializer=tf.random_normal_initializer(stddev=0.01),
                     act_cfg=self.cfg.act_cfg,
                     norm_cfg=self.cfg.norm_cfg,
                     order=('conv','norm','act')
@@ -78,15 +79,18 @@ class AnchorHead(tf.keras.Model):
                     3,
                     strides=1,
                     padding='SAME',
+                    kernel_initializer=tf.random_normal_initializer(stddev=0.01),
+                    bias_initializer=tf.zeros_initializer(),
                     act_cfg=self.cfg.act_cfg,
                     norm_cfg=self.cfg.norm_cfg,
-                    order=('conv','norm','act')
+                    order=('conv','norm','act'),
+
                 )
             )
         self.head_cls.append(
             tf.keras.layers.Conv2D(
                 self.num_anchors * self.cfg.num_classes,3,
-                padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
+                padding='SAME',
                 bias_initializer=tf.constant_initializer(-np.log((1 - 0.01) / 0.01)),)
         )
         self.head_bbox.append(
