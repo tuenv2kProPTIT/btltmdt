@@ -166,7 +166,7 @@ class AnchorHead(tf.keras.Model):
         ) 
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
         total_matched = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
-
+        print(matched_reg_targets.shape,mask_reg_targets.shape,matched_gt_classes.shape,mask_classes_tagets.shape,total_matched.shape)
         return matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched
 
     def loss_fn_backup(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
