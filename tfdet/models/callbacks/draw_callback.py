@@ -11,7 +11,9 @@ class DrawCallBack(tf.keras.callbacks.Callback):
     def on_epoch_begin(self,epoch, logs=None):
         epoch =epoch + 1 
         log_epoch = os.path.join(self.log_dir,f"{epoch}")
-        os.makedirs(os.path.join(self.log_dir,f"{epoch}"))
+        os.makedirs(os.path.join(self.log_dir,f"{epoch}"), exist_ok=True)
+        if epoch !=1:
+            return
         for index,sample in enumerate(self.batch_sample_test):
             image=sample['image'].numpy()
             target = make_target(sample['bboxes'],sample['labels'],sample['mask'])

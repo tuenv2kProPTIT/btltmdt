@@ -200,7 +200,7 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         base_anchors =tf2.stack(base_anchors, axis=-1)
 
         return base_anchors
-    def _meshgrid(self, x, y, row_major=True):
+    def _meshgrid(self, x, y, row_major=False):
         """Generate mesh grid of x and y.
         Args:
             x (torch.Tensor): Grids of x dimension.
