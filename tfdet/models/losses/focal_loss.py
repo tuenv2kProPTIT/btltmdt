@@ -5,7 +5,7 @@ from tfdet.models.losses.build_loss import register
 
 @dataclass
 class FocalLossConfig:
-    gamma:float=2.0
+    gamma:float=1.5
     alpha: float=0.25
     use_sigmoid:bool  = True 
     loss_weight:float = 0.1

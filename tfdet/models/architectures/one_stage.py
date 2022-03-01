@@ -12,7 +12,6 @@ class ConfigOneStage:
     name='OneStage'
     url = 'None'
     last_modified='25/02/2022'
-
     backbone: Dict = field(default_factory=lambda : dict(
         name='resnetv2',
         input_size=(512,512),
@@ -21,8 +20,6 @@ class ConfigOneStage:
         pool_size=14,
         crop_pct=1.0,
     ))
-
-
     neck : Dict = field(default_factory= lambda : dict(
         name='fpn',
         num_nb_ins=4,
@@ -64,6 +61,7 @@ class ConfigOneStage:
            
         )
     ))
+    clip_gradients_norm : float = 10.
     weight_decay:float=4e-5
     class_cfg : Dict = field(default_factory= lambda : {
         0:"aeroplane", 1:"bicycle",2:"bird",3:"boat",
@@ -116,6 +114,13 @@ class OneStageModel(tf.keras.Model):
             loss = sum(loss_dict.values())
             trainable_variables = self.trainable_variables
         gradients = tape.gradient(loss, trainable_variables)
+        if self.cfg.clip_gradients_norm > 0:
+            clip_norm=abs(self.cfg.clip_gradients_norm)
+            gradients = [
+                tf.clip_by_norm(g, clip_norm) if g is not None else None
+                for g in gradients
+            ]
+            gradients, _ = tf.clip_by_global_norm(gradients, clip_norm)
         self.optimizer.apply_gradients(zip(gradients, trainable_variables))
         return loss_dict
     @tf.function(experimental_relax_shapes=True)

@@ -135,7 +135,7 @@ class AnchorHead(tf.keras.Model):
         ) / (total_matched)
 
         return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
-
+    @tf.autograph.experimental.do_not_convert
     def loss_fn3_support(self, args):
         anchor_level, target_boxes, target_labels, mask_labels=args
         target_labels=tf.reshape(target_labels,[-1,1])
@@ -307,6 +307,8 @@ class AnchorHead(tf.keras.Model):
         if name and name == 'global_postprocessing':
             nms_boxes, nms_scores, nms_classes, nms_valid_len=postprocess_global(pp, cls_scores, bbox_preds)
             return refine_class(nms_boxes, nms_scores, nms_classes, nms_valid_len)
+        
+        
 def refine_class(nms_boxes, nms_scores, nms_classes, nms_valid_len):
   bs=nms_boxes.shape[0]
   targets=[]

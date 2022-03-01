@@ -1,5 +1,4 @@
 from dataclasses import dataclass
-from tfdet.utils.constants import IMAGE_KEY, BBOX_KEY, LABEL_KEY
 import tensorflow as tf
 import PIL.Image
 import hashlib
@@ -96,8 +95,9 @@ def convert_dataset_to_tfrecord(
       tf.io.TFRecordWriter(os.path.join(output_dir , '%06d-of-%06d.tfrecord' %
                            (i, num_shards))) for i in range(num_shards)
     ]
-
+    cardinaty = 0
     for idx,image_object in tqdm(enumerate(datasets), total=len(datasets)):
+        cardinaty = cardinaty + 1
         example =serializable_feature(image_object)
         writers[idx % num_shards].write(example.SerializeToString())
     for writer in writers:

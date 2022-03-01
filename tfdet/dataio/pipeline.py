@@ -18,6 +18,5 @@ def pipeline(cfgs):
         num_parallel_calls=config['num_parallel_calls']
         deterministic=config['deterministic']
         data = data.map(pipe, num_parallel_calls=num_parallel_calls, deterministic = deterministic)
-    
     return data 
     

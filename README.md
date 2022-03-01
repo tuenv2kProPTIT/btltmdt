@@ -172,3 +172,12 @@ callback=
 model.fit(train_ds.prefetch(4), epochs=4,....)
 
 ```
+
+
+# Todo
+
+- [ ] : Refactor code register backbone-neck-head.
+- [ ] : Refactor use tfds format - **importance**.
+- [ ] : Re thinking from flexible pipeline current - but more memory footprint or change to simple - but less memory - faster. 
+- [ ] : Add callbacks CoCo - **important**.
+- [ ] : Add lr-schedule.
