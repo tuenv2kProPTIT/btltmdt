@@ -3,7 +3,7 @@ from typing import Dict, Tuple, Union
 import tensorflow as tf 
 from dataclasses import dataclass,asdict, field
 from tfdet.dataio.registry import register
-
+from tfdet.utils.serializable import keras_serializable
 def to_tuple(x):
     if isinstance(x,list):
         assert len(x) == 2
