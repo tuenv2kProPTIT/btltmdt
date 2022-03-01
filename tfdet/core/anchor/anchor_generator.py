@@ -277,7 +277,7 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         # add A anchors (1, A, 4) to K shifts (K, 1, 4) to get
         # shifted anchors (K, A, 4), reshape to (K*A, 4)
 
-        all_anchors = shifts[:, None, :] + base_anchors[None, :, :] 
+        all_anchors =  base_anchors[None, :, :] + shifts[:, None, :]  
         all_anchors =tf2.reshape(all_anchors, (-1, 4))
         # first A rows correspond to A anchors of (0, 0) in feature map,
         # then (0, 1), (0, 2), ...
