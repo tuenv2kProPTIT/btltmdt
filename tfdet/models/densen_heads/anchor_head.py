@@ -128,7 +128,7 @@ class AnchorHead(tf.keras.Model):
         mask_reg_targets=tf.concat(mask_reg_targets,0)
         matched_gt_classes=tf.concat(matched_gt_classes,0)
         mask_classes_tagets=tf.concat(mask_classes_tagets,0)
-        total_matched=tf.concat(total_matched,0)
+        total_matched=tf.stack(total_matched,0)
 
         cls_score = tf.reshape(cls_score,[-1, self.cfg.num_classes])
         bbox_pred = tf.reshape(bbox_pred, [-1, 4])
