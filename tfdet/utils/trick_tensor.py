@@ -30,8 +30,9 @@ def gather_based_on_match(
     param_to_gather,
     name_ops='gather_normal'
 ):
+    
     input_tensor = tf.concat(
-        [tf.stack([ignored_value, unmatched_value]),
+        [tf.stack([ignored_value, unmatched_value]), #2,1 , n,1, 2,4, n,4
             input_tensor],
         axis=0)
     gather_indices = tf.maximum(param_to_gather + 2, 0)
