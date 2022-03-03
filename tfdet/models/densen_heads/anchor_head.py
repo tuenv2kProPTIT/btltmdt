@@ -225,8 +225,14 @@ class AnchorHead(tf.keras.Model):
         
         function work on batch_size is 1: reduce_memory but incresea time to training.
         """
-        target_labels=tf.reshape(target_labels,[-1,1])
         mask_labels = tf.reshape(mask_labels, [-1,])
+        mask_labels = tf.cast(mask_labels,tf.bool)
+
+        target_labels=tf.reshape(target_labels,[-1,1])
+        # target_labels = tf.slice(target_labels,[0,0],[mask_labels,1])
+        target_labels = tf.boolean_mask(target_labels, mask_labels)
+        target_boxes = tf.boolean_mask(target_boxes, mask_labels)
+
         shape_list_feature=shape_list(cls_score)
         cls_score = tf.reshape(cls_score,[1* shape_list_feature[0] * shape_list_feature[1] * self.num_anchors,self.cfg.num_classes])
         # bs,M,num_classes
@@ -234,7 +240,7 @@ class AnchorHead(tf.keras.Model):
         # bs,M,4
         # print("anchor level", anchor_level)
         # print("mask_labels",mask_labels)
-        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes, ignore_tagets=mask_labels)
+        index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes)
 
         index_matching = self.sampler.sampler(index_matching)
         index_matching = tf.stop_gradient(index_matching)
