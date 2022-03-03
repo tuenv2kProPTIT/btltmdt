@@ -217,7 +217,7 @@ class AnchorHead(tf.keras.Model):
         loss_dict[f'cls_loss'] = sum(loss_dict['cls_loss']) / float(self.cfg.train_cfg['batch_size'])
         loss_dict[f'bbox_loss']= sum(loss_dict['bbox_loss']) / float(self.cfg.train_cfg['batch_size'])
         return loss_dict
-
+    @tf.autograph.experimental.do_not_convert
     def loss_fn_reduce_on_features(self, cls_score, bbox_pred, anchor_level, target_boxes, target_labels, mask_labels):
         """
         cls_score: w,h,num_anchors * num_classes
@@ -235,16 +235,16 @@ class AnchorHead(tf.keras.Model):
         target_boxes = tf.boolean_mask(target_boxes, mask_labels)
 
         shape_list_feature=shape_list(cls_score)
-        cls_score = tf.reshape(cls_score,[1* shape_list_feature[0] * shape_list_feature[1] * self.num_anchors,self.cfg.num_classes])
+        cls_score = tf.reshape(cls_score,[-1,self.cfg.num_classes])
         # bs,M,num_classes
-        bbox_pred = tf.reshape(bbox_pred, [1* shape_list_feature[1] * shape_list_feature[0] * self.num_anchors, 4 ])
+        bbox_pred = tf.reshape(bbox_pred, [-1, 4 ])
         # bs,M,4
         # print("anchor level", anchor_level)
         # print("mask_labels",mask_labels)
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes)
 
         index_matching = self.sampler.sampler(index_matching)
-        index_matching = tf.stop_gradient(index_matching)
+        # index_matching = tf.stop_gradient(index_matching)
         # print("index_matching",index_matching)
         # -2 for ignore,-1 negative, index for positive
         # print("taget",target_boxes)
@@ -255,7 +255,7 @@ class AnchorHead(tf.keras.Model):
             index_matching,
             name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
         )
-        matched_gt_boxes=tf.stop_gradient(matched_gt_boxes)
+        # matched_gt_boxes=tf.stop_gradient(matched_gt_boxes)
         # print("matched",matched_gt_boxes )
         matched_reg_targets =self.bbox_encode.encode(
             matched_gt_boxes,
@@ -270,7 +270,7 @@ class AnchorHead(tf.keras.Model):
             index_matching,
             name_ops=self.cfg.train_cfg.get('gather_type','gather_normal')
         ) 
-        matched_gt_classes=tf.stop_gradient(matched_gt_classes)
+        # matched_gt_classes=tf.stop_gradient(matched_gt_classes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
         
         loss_bbox = self.cal_loss_bboxes.compute_loss(

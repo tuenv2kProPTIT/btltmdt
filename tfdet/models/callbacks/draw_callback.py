@@ -32,7 +32,7 @@ class DrawCallBack(tf.keras.callbacks.Callback):
             image=sample['image'].numpy()
             if self.image_net_transform:
                 image = image * 255. * np.array(IMAGENET_DEFAULT_STD).reshape([1,1,1,3]) + np.array(IMAGENET_DEFAULT_MEAN).reshape([1,1,1,3]) * 255.
-        plot_images(image, target, fname=os.path.join(log_epoch,f"{index}_predict.jpg"))
+            plot_images(image, target, fname=os.path.join(log_epoch,f"{index}_predict.jpg"))
 
         
 
