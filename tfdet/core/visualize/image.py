@@ -202,7 +202,7 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
     # Annotate
     fs = int((h + w) * ns * 0.01)  # font size
     annotator = Annotator(mosaic, line_width=round(fs / 10), font_size=fs, pil=True, example=names)
-    for i in range(i + 1):
+    for i in range(len(images)):
         x, y = int(w * (i // ns)), int(h * (i % ns))  # block origin
         annotator.rectangle([x, y, x + w, y + h], None, (255, 255, 255), width=2)  # borders
         if paths:
@@ -228,9 +228,9 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
                 cls = classes[j]
                 color = colors(cls)
                 cls = names[cls] if names else cls
-                if labels or conf[j] > 0.25:  # 0.25 conf thresh
-                    label = f'{cls}' if labels else f'{cls} {conf[j]:.1f}'
-                    annotator.box_label(box, label, color=color)
+                # if labels or conf[j] > 0.25:  # 0.25 conf thresh
+                label = f'{cls}' if labels else f'{cls} {conf[j]:.1f}'
+                annotator.box_label(box, label, color=color)
     annotator.im.save(fname)  # save
 
 
@@ -250,7 +250,7 @@ def make_target(bboxes, labels, mask):
     label = labels[i,...][mask]
     box=box.reshape([-1,4])
     label=label.reshape([-1,1])
-    index = np.array([i,] * box.shape[0]).reshape([-1,1])
+    index = np.array([i,] * int(box.shape[0])).reshape([-1,1])
     target = np.concatenate([index, label, box],axis=1)
     targets.append(target)
   targets = np.concatenate(targets)
