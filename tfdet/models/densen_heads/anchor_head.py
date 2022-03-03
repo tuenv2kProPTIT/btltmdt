@@ -99,7 +99,7 @@ class AnchorHead(tf.keras.Model):
                 padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
-
+    @tf.function
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature])
@@ -155,7 +155,7 @@ class AnchorHead(tf.keras.Model):
         ) / (total_matched)
 
         return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
-    @tf.autograph.experimental.do_not_convert
+    @tf.function
     def loss_fn3_support(self, args,anchor_level):
         target_boxes, target_labels, mask_labels=args
         # mask_labels = tf.reduce_sum(mask_labels)
