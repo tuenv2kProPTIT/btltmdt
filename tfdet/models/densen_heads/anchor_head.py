@@ -116,19 +116,19 @@ class AnchorHead(tf.keras.Model):
         mask_reg_targets=[]
         matched_gt_classes=[]
         mask_classes_tagets=[]
-        total_matched=[]
+      
         for batch in range(self.cfg.train_cfg['batch_size']):
             a,b,c,d,e = self.loss_fn3_support((target_boxes[batch],target_labels[batch],mask_labels[batch]),anchors)
             matched_reg_targets.append(a)
             mask_reg_targets.append(b)
             matched_gt_classes.append(c)
             mask_classes_tagets.append(d)
-            total_matched.append(e)
+          
         matched_reg_targets = tf.concat(matched_reg_targets,0)
         mask_reg_targets=tf.concat(mask_reg_targets,0)
         matched_gt_classes=tf.concat(matched_gt_classes,0)
         mask_classes_tagets=tf.concat(mask_classes_tagets,0)
-        total_matched=tf.stack(total_matched,0)
+        
 
         cls_score = tf.reshape(cls_score,[-1, self.cfg.num_classes])
         bbox_pred = tf.reshape(bbox_pred, [-1, 4])
@@ -142,17 +142,17 @@ class AnchorHead(tf.keras.Model):
         # mask_classes_tagets=tf.stop_gradient(mask_classes_tagets)
         mask_classes_tagets=tf.reshape(mask_classes_tagets,[-1,])
         # total_matched = tf.stop_gradient(total_matched)
-        total_matched=tf.math.reduce_sum(total_matched) * float(self.cfg.train_cfg['batch_size'])
+        bs= float(self.cfg.train_cfg['batch_size'])
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
             matched_reg_targets,
             mask_reg_targets
-        ) / (total_matched  )
+        ) / (bs  )
         loss_cls = self.cal_loss_classes.compute_loss(
             cls_score,
             matched_gt_classes,
             mask_classes_tagets
-        ) / (total_matched)
+        ) / (bs)
 
         return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
     @tf.function(experimental_relax_shapes=True)
@@ -174,6 +174,7 @@ class AnchorHead(tf.keras.Model):
 
         index_matching = self.sampler.sampler(index_matching)
         # print(index_matching)
+        total_matched = tf.maximum(1.,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
         matched_gt_boxes = gather_based_on_match(
             target_boxes,
             tf.zeros(4),
@@ -186,6 +187,7 @@ class AnchorHead(tf.keras.Model):
             anchor_level
         )
         mask_reg_targets = tf.where(index_matching >=0, 1, 0)
+        mask_reg_targets=tf.cast(mask_reg_targets,tf.float32) /total_matched
         matched_gt_classes = gather_based_on_match(
             target_labels,
             tf.constant([-1],tf.int32),
@@ -194,9 +196,11 @@ class AnchorHead(tf.keras.Model):
         ) 
         # print(matched_gt_classes,matched_gt_boxes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
-        total_matched = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
         
-        return matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched
+        mask_classes_tagets = tf.cast(mask_classes_tagets,tf.float32) * total_matched
+
+        
+        return matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets
 
     def loss_fn_backup(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
