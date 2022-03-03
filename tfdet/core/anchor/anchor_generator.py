@@ -194,8 +194,8 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         # use float anchor and the anchor's center is aligned with the
         # pixel center
         base_anchors = [
-            x_center - 0.5 * ws, y_center - 0.5 * hs, x_center + 0.5 * ws,
-            y_center + 0.5 * hs
+            y_center - 0.5 * hs,x_center - 0.5 * ws,
+            y_center + 0.5 * hs, x_center + 0.5 * ws
         ]
         base_anchors =tf2.stack(base_anchors, axis=-1)
 
@@ -272,12 +272,12 @@ class AnchorGenerator(tf2.keras.layers.Layer):
         shift_xx, shift_yy = self._meshgrid(shift_x, shift_y)
         shift_xx = tf2.reshape(shift_xx,(-1,))
         shift_yy= tf2.reshape(shift_yy,(-1,))
-        shifts = tf2.stack([shift_yy,shift_xx, shift_yy,shift_xx], axis=-1)
+        shifts = tf2.stack([shift_yy, shift_xx, shift_yy, shift_xx], axis=-1)
         # first feat_w elements correspond to the first row of shifts
         # add A anchors (1, A, 4) to K shifts (K, 1, 4) to get
         # shifted anchors (K, A, 4), reshape to (K*A, 4)
 
-        all_anchors =  base_anchors[None, :, :] + shifts[:, None, :]  
+        all_anchors =  base_anchors[None, :, :] + shifts[:, None, :]   # [1, 9,4] + [N,1,4]
         all_anchors =tf2.reshape(all_anchors, (-1, 4))
         # first A rows correspond to A anchors of (0, 0) in feature map,
         # then (0, 1), (0, 2), ...

@@ -132,16 +132,16 @@ class AnchorHead(tf.keras.Model):
 
         cls_score = tf.reshape(cls_score,[-1, self.cfg.num_classes])
         bbox_pred = tf.reshape(bbox_pred, [-1, 4])
-        matched_reg_targets=tf.stop_gradient(matched_reg_targets)
+        # matched_reg_targets=tf.stop_gradient(matched_reg_targets)
         
         matched_reg_targets=tf.reshape(matched_reg_targets,[-1,4]) 
-        mask_reg_targets = tf.stop_gradient(mask_reg_targets)
+        # mask_reg_targets = tf.stop_gradient(mask_reg_targets)
         mask_reg_targets=tf.reshape(mask_reg_targets, [-1,4])
-        matched_gt_classes = tf.stop_gradient(matched_gt_classes)
+        # matched_gt_classes = tf.stop_gradient(matched_gt_classes)
         matched_gt_classes=tf.reshape(matched_gt_classes,[-1,])
-        mask_classes_tagets=tf.stop_gradient(mask_classes_tagets)
+        # mask_classes_tagets=tf.stop_gradient(mask_classes_tagets)
         mask_classes_tagets=tf.reshape(mask_classes_tagets,[-1,])
-        total_matched = tf.stop_gradient(total_matched)
+        # total_matched = tf.stop_gradient(total_matched)
         total_matched=tf.math.reduce_sum(total_matched)
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
@@ -173,7 +173,7 @@ class AnchorHead(tf.keras.Model):
         index_matching  = self.assigner.match(anchors=anchor_level, targets=target_boxes)
 
         index_matching = self.sampler.sampler(index_matching)
-        print(index_matching)
+        # print(index_matching)
         matched_gt_boxes = gather_based_on_match(
             target_boxes,
             tf.zeros(4),
@@ -192,7 +192,7 @@ class AnchorHead(tf.keras.Model):
             tf.constant([-1],tf.int32),
             index_matching
         ) 
-        print(matched_gt_classes,matched_gt_boxes)
+        # print(matched_gt_classes,matched_gt_boxes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
         total_matched = tf.maximum(0.000001,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
         
