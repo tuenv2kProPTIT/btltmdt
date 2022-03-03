@@ -25,7 +25,9 @@ class Normalize(Transform):
     def apply(self, data_dict, training=None):
         params = self.get_params()
         mean = tf.constant(params['mean'],tf.float32)
+        mean=tf.reshape(mean, [1,1,3])
         std = tf.constant(params['std'], tf.float32)
+        std=tf.reshape(std, [1,1,3])
         image = data_dict['image']
         shape= shape_list(image)
         if len(shape) == 4:
