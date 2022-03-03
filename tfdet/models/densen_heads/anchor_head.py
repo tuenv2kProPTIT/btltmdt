@@ -197,7 +197,7 @@ class AnchorHead(tf.keras.Model):
         total_matched = tf.maximum(1.,tf.cast(tf.reduce_sum(mask_reg_targets),tf.float32))
         
         return matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets, total_matched
-
+    @tf.function(experimental_relax_shapes=True)
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature]) 
