@@ -9,7 +9,7 @@ class DeltaXYWHConfig(CoreConfig):
     last_modified = '25/02/2022'
     name = 'bbox_encoder'
     
-    scale_factors:Tuple[int] =field(default_factory=lambda: [10., 10., 5., 5.])
+    scale_factors:Tuple[int] =field(default_factory=lambda: [1., 1., 1., 1.])
 
 def get_center_coordinates_and_sizes(box_corners, scope='None'):
     """Computes the center coordinates, height and width of the boxes.
