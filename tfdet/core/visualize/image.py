@@ -238,14 +238,15 @@ def plot_images(images, targets, paths=None, fname='images.jpg', names=None, max
 
 
 import re
-def make_target(bboxes, labels, mask):
+def make_target(bboxes, labels, masks):
   bboxes=bboxes.numpy()
   labels=labels.numpy()
-  masks  = mask.numpy()
+  masks  = masks.numpy()
   bs = labels.shape[0]
   targets=[]
   for i in range(bs):
     mask=np.reshape(masks[i],[-1,]) 
+    mask=mask.astype(np.bool8)
     box=bboxes[i,...][mask]
     label = labels[i,...][mask]
     box=box.reshape([-1,4])
