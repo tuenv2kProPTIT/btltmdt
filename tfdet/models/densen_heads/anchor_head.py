@@ -32,7 +32,7 @@ class AnchorHeadConfig(HeadConfig):
     loss_cls : Dict = field(default_factory=lambda: {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.})
     loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':10.})
 
-    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing','top_k':True, 'nms_configs':{'max_nms_inputs':200,'method':'gaussian','max_output_size':100,'iou_thresh':0.5,'score_thresh':0.01,'sigma':0.5}}})
+    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing','top_k':True, 'nms_configs':{'max_nms_inputs':200,'method':'gaussian','max_output_size':100,'iou_thresh':0.65,'score_thresh':0.01,'sigma':0.5}}})
     train_cfg :  Dict =field(default_factory=lambda: {
        
         'batch_size':16,
@@ -99,7 +99,7 @@ class AnchorHead(tf.keras.Model):
                 padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
-    @tf.function
+    @tf.function(experimental_relax_shapes=True)
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature])
@@ -155,7 +155,7 @@ class AnchorHead(tf.keras.Model):
         ) / (total_matched)
 
         return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
-    @tf.function
+    @tf.function(experimental_relax_shapes=True)
     def loss_fn3_support(self, args,anchor_level):
         target_boxes, target_labels, mask_labels=args
         # mask_labels = tf.reduce_sum(mask_labels)
