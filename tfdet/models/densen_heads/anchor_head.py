@@ -99,7 +99,7 @@ class AnchorHead(tf.keras.Model):
                 padding='SAME',kernel_initializer=tf.initializers.RandomNormal(0.0, 0.01),
                 bias_initializer=tf.random_normal_initializer(stddev=0.01),)
         )
-    @tf.function(experimental_relax_shapes=True)
+   
     def loss_fn(self, cls_score, bbox_pred, target_boxes, target_labels, mask_labels):
         shape_list_feature = [shape_list(i) for i in cls_score]
         anchors = self.anchor_generator.grid_priors([ shape[-3:-1] for shape in shape_list_feature])
@@ -136,13 +136,13 @@ class AnchorHead(tf.keras.Model):
         
         matched_reg_targets=tf.reshape(matched_reg_targets,[-1,4]) 
         # mask_reg_targets = tf.stop_gradient(mask_reg_targets)
-        mask_reg_targets=tf.reshape(mask_reg_targets, [-1,4])
+        mask_reg_targets=tf.reshape(mask_reg_targets, [-1,])
         # matched_gt_classes = tf.stop_gradient(matched_gt_classes)
         matched_gt_classes=tf.reshape(matched_gt_classes,[-1,])
         # mask_classes_tagets=tf.stop_gradient(mask_classes_tagets)
         mask_classes_tagets=tf.reshape(mask_classes_tagets,[-1,])
         # total_matched = tf.stop_gradient(total_matched)
-        total_matched=tf.math.reduce_sum(total_matched) * float(self.cfg.train_cfg['batch_size'])
+        total_matched=tf.math.reduce_sum(total_matched)
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
             matched_reg_targets,
@@ -155,7 +155,7 @@ class AnchorHead(tf.keras.Model):
         ) / (total_matched)
 
         return  {"cls_loss":loss_cls,"bbox_loss":loss_bbox}
-    @tf.function(experimental_relax_shapes=True)
+    
     def loss_fn3_support(self, args,anchor_level):
         target_boxes, target_labels, mask_labels=args
         # mask_labels = tf.reduce_sum(mask_labels)
