@@ -118,7 +118,7 @@ class AnchorHead(tf.keras.Model):
         mask_classes_tagets=[]
       
         for batch in range(self.cfg.train_cfg['batch_size']):
-            a,b,c,d,e = self.loss_fn3_support((target_boxes[batch],target_labels[batch],mask_labels[batch]),anchors)
+            a,b,c,d = self.loss_fn3_support((target_boxes[batch],target_labels[batch],mask_labels[batch]),anchors)
             matched_reg_targets.append(a)
             mask_reg_targets.append(b)
             matched_gt_classes.append(c)
