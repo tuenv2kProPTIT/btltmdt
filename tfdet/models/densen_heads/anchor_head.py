@@ -197,8 +197,9 @@ class AnchorHead(tf.keras.Model):
         ) 
         # print(matched_gt_classes,matched_gt_boxes)
         mask_classes_tagets = tf.where(index_matching >= -1, 1, 0)
-        
-        mask_classes_tagets = tf.cast(mask_classes_tagets,tf.float32) / total_matched
+        total_matched_cls = tf.maximum(1.,tf.cast(tf.reduce_sum(mask_classes_tagets),tf.float32))
+       
+        mask_classes_tagets = tf.cast(mask_classes_tagets,tf.float32) / total_matched_cls
 
         
         return matched_reg_targets,mask_reg_targets, matched_gt_classes, mask_classes_tagets
