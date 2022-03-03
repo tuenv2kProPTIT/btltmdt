@@ -14,18 +14,17 @@ class FocalLossConfig:
     last_modified:str='25/02/2022'
 
 @tf.function(experimental_relax_shapes=True)
-def focal_loss_funtion(pred, target, alpha = 0.25, gamma = 2., label_smoothing = 0.):
-    pred_prob = tf.nn.sigmoid(pred)
-    # p_t = ((1-target )* pred_prob) + (target * (1 - pred_prob))
-    p_t = (target * pred_prob) + ((1 - target) * (1 - pred_prob))
-    alpha_factor = target * alpha + (1 - target) * (1 - alpha)
-    
-    # alpha_factor = y_true * alpha + (1 - y_true) * (1 - alpha)
-    modulating_factor =  tf.pow(1.0-p_t,gamma)
-    target = target * (1.0 -label_smoothing) + 0.5 * label_smoothing
-    ce = tf.nn.sigmoid_cross_entropy_with_logits(labels=target, logits=pred)
-    loss_without_weights= alpha_factor * modulating_factor * ce
-    return tf.math.reduce_sum(loss_without_weights,axis=-1)
+def focal_loss_funtion(y_pred, y_true, alpha = 0.25, gamma = 2., label_smoothing = 0.):
+    pred_prob = tf.sigmoid(y_pred)
+    p_t = (y_true * pred_prob) + ((1 - y_true) * (1 - pred_prob))
+    alpha_factor = y_true * alpha + (1 - y_true) * (1 - alpha)
+    modulating_factor = (1.0 - p_t)**gamma
+
+    # apply label smoothing for cross_entropy for each entry.
+    y_true = y_true * (1.0 - label_smoothing) + 0.5 *label_smoothing
+    ce = tf.nn.sigmoid_cross_entropy_with_logits(labels=y_true, logits=y_pred)
+    loss_without_weights=alpha_factor * modulating_factor * ce 
+    return tf.math.reduce_sum(loss_without_weights,axis=-1) #bs,num_classes
 @register
 class FocalLoss:
     cfg_class = FocalLossConfig

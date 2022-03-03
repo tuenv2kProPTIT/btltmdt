@@ -142,7 +142,7 @@ class AnchorHead(tf.keras.Model):
         # mask_classes_tagets=tf.stop_gradient(mask_classes_tagets)
         mask_classes_tagets=tf.reshape(mask_classes_tagets,[-1,])
         # total_matched = tf.stop_gradient(total_matched)
-        total_matched=tf.math.reduce_sum(total_matched)
+        total_matched=tf.math.reduce_sum(total_matched) * float(self.cfg.train_cfg['batch_size'])
         loss_bbox = self.cal_loss_bboxes.compute_loss(
             bbox_pred,
             matched_reg_targets,
