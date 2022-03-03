@@ -32,7 +32,7 @@ class AnchorHeadConfig(HeadConfig):
     loss_cls : Dict = field(default_factory=lambda: {"name":'focalloss','use_sigmoid':True, 'loss_weight':1.})
     loss_bbox: Dict = field(default_factory=lambda:{'name':'SmoothL1Loss','beta':1.0/9.0,'loss_weight':10.})
 
-    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing','top_k':True, 'nms_configs':{'max_nms_inputs':200,'method':'gaussian','max_output_size':100,'iou_thresh':0.5,'score_thresh':0.01,'sigma':0.5}}})
+    test_cfg : Dict = field(default_factory=lambda:{'post_processing':{'name':'global_postprocessing','top_k':True, 'nms_configs':{'max_nms_inputs':200,'method':'gaussian','max_output_size':100,'iou_thresh':0.5,'score_thresh':0.1,'sigma':0.5}}})
     train_cfg :  Dict =field(default_factory=lambda: {
        
         'batch_size':16,
