@@ -278,7 +278,7 @@ class AnchorHead(tf.keras.Model):
             matched_reg_targets,
             mask_reg_targets
         ) / (total_matched  )
-        total_matched = tf.maximum(1.,tf.cast(tf.reduce_sum(mask_classes_tagets),tf.float32))
+        # total_matched = tf.maximum(1.,tf.cast(tf.reduce_sum(mask_classes_tagets),tf.float32))
         loss_cls = self.cal_loss_classes.compute_loss(
             cls_score,
             matched_gt_classes,
